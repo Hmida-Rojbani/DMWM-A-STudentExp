@@ -1,0 +1,1 @@
+require('./db/connection')('mongodb+srv://user:1234@mongoformation-xc16w.mongodb.net/dmwmA?retryWrites=true&w=majority')
