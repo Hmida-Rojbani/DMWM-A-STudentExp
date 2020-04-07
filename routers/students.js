@@ -58,4 +58,20 @@ router.delete('/id/:id',async (req,res)=>{
 
 //Put by id (update)
 
+router.put('/id/:id',async (req,res)=>{
+    let errors;
+    if(errors=objectid_not_valid(req.params))
+        return res.status(400).send(errors.details[0].message)
+    let student = await Student.findById(req.params.id);
+    if(! student)
+        return res.status(200).send('Student with this id is not found');
+    student = _.merge(student,req.body);
+    try{
+        const saved_student = await student.save();
+        return res.status(201).send(saved_student);
+    }catch(err){
+        return res.status(400).send(`DB error : ${err.message}`)
+    }
+});
+
 module.exports = router;
