@@ -1,6 +1,7 @@
 const router = require('express').Router();
-const { Student } = require('../models/student');
+const { Student, student_not_valide, objectid_not_valid } = require('../models/student');
 const _ = require('lodash');
+
 
 router.get('',async (req,res)=>{
     const students = await Student.find();
@@ -18,9 +19,43 @@ router.post('',async (req,res)=>{
     });*/
 
     //validation par joi
+    let errors;
+    if(errors=student_not_valide(req.body))
+        return res.status(400).send(errors.details[0].message)
     const student = new Student(_.pick(req.body,['name','age','email']));
-    const saved_student = await student.save();
-    res.status(201).send(saved_student);
+    try{
+        const saved_student = await student.save();
+        return res.status(201).send(saved_student);
+    }catch(err){
+        return res.status(400).send(`DB error : ${err.message}`)
+    }
+    
 });
+
+//get by id
+
+router.get('/id/:id',async (req,res)=>{
+    let errors;
+    if(errors=objectid_not_valid(req.params))
+        return res.status(400).send(errors.details[0].message)
+    const student = await Student.findById(req.params.id);
+    if(! student)
+        return res.status(204).end();
+    res.send(student);
+});
+
+//delete by id
+
+router.delete('/id/:id',async (req,res)=>{
+    let errors;
+    if(errors=objectid_not_valid(req.params))
+        return res.status(400).send(errors.details[0].message)
+    const student = await Student.findByIdAndRemove(req.params.id);
+    if(!student)
+        return res.status(200).send('Student with this id is not found');
+    res.send(student);
+});
+
+//Put by id (update)
 
 module.exports = router;
