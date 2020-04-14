@@ -14,6 +14,12 @@ const student_validation_schema= {
     email: Joi.string().email().required()
 }
 
+const student_opt_validation_schema= {
+    name: Joi.string().min(3),
+    age: Joi.number().positive(),
+    email: Joi.string().email()
+}
+
 const objectid_valid_schema = {
     id: Joi.objectid().required()
 }
@@ -26,8 +32,13 @@ function student_not_valide(student) {
     var results = Joi.validate(student, student_validation_schema);
     return results.error;
 }
+function student_opt_not_valide(student) {
+    var results = Joi.validate(student, student_opt_validation_schema);
+    return results.error;
+}
 const Student = mongoose.model('Student',student_schema);
 
 module.exports.Student = Student;
 module.exports.student_not_valide = student_not_valide;
+module.exports.student_opt_not_valide = student_opt_not_valide;
 module.exports.objectid_not_valid = objectid_not_valid;
