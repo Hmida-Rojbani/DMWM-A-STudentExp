@@ -16,6 +16,7 @@ const student_validation_schema= {
 
 const student_opt_validation_schema= {
     name: Joi.string().min(3),
+    part_name: Joi.string(),
     age: Joi.number().positive(),
     min_age: Joi.number().positive(),
     max_age: Joi.number().positive(),

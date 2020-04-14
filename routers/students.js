@@ -95,5 +95,12 @@ router.get('/count/age/min/:min_age/max/:max_age', async (req,res)=>{
     const students = await Student.find({age : { $gte :req.params.min_age, $lte: req.params.max_age}});
     res.send(`${students.length} is the number of students with the age between [${req.params.min_age},${req.params.max_age}]`);
 })
-// students with name contains a given string %like
+// students name and id of stdents with name contains a given string %like%
+router.get('/name/like/:part_name', async (req,res)=>{
+    if(errors=student_opt_not_valide(req.params))
+        return res.status(400).send(errors.details[0].message)
+    const students = await Student.find({name : { $regex : req.params.part_name, $options:"i"}})
+                                    .select('name');
+    res.send(students);
+})
 module.exports = router;
