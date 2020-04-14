@@ -80,6 +80,20 @@ router.put('/id/:id',async (req,res)=>{
 });
 
 // count students with an specific age
+router.get('/count/age/:age', async (req,res)=>{
+    if(errors=student_opt_not_valide(req.params))
+        return res.status(400).send(errors.details[0].message)
+    const students = await Student.find({age : req.params.age});
+    res.send(`${students.length} is the number of students with the age ${req.params.age}`);
+})
 // count students with age between an intervall
+router.get('/count/age/min/:min_age/max/:max_age', async (req,res)=>{
+    if(errors=student_opt_not_valide(req.params))
+        return res.status(400).send(errors.details[0].message)
+    if(req.params.min_age > req.params.max_age)
+    return res.status(400).send('min_age must be less or equals max_age')
+    const students = await Student.find({age : { $gte :req.params.min_age, $lte: req.params.max_age}});
+    res.send(`${students.length} is the number of students with the age between [${req.params.min_age},${req.params.max_age}]`);
+})
 // students with name contains a given string %like
 module.exports = router;
