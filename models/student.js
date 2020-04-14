@@ -5,13 +5,22 @@ Joi.objectid = require('joi-objectid')(Joi);
 const student_schema = new mongoose.Schema({
     name: {type: String, required:true},
     age: Number,
-    email: {type: String, unique: true, required: true}
+    email: {type: String, unique: true, required: true},
+    extra_price : { type : Number, required : function () { return this.age >25 ;}},
+    class_room : {
+        class_room_id : {type: mongoose.Schema.ObjectId, ref :'ClassRoom'},
+        name : {type: String, required : true, enum : ['DMWM','GLSI','SSIR','DSEN']}
+    }
 });
 
 const student_validation_schema= {
     name: Joi.string().min(3).required(),
     age: Joi.number().positive(),
-    email: Joi.string().email().required()
+    email: Joi.string().email().required(),
+    extra_price : Joi.number().positive(),
+    class_room : {
+        class_room_id : Joi.objectid().required()
+    }
 }
 
 const student_opt_validation_schema= {
@@ -20,7 +29,11 @@ const student_opt_validation_schema= {
     age: Joi.number().positive(),
     min_age: Joi.number().positive(),
     max_age: Joi.number().positive(),
-    email: Joi.string().email()
+    email: Joi.string().email(),
+    extra_price : Joi.number().positive(),
+    class_room : {
+        class_room_id : Joi.objectid()
+    }
 }
 
 const objectid_valid_schema = {
