@@ -17,8 +17,17 @@ const user_validation_schema= {
     isAdmin :Joi.boolean()
 }
 
+const user_login_validation_schema= {
+    username: Joi.string().email().required(),
+    password : Joi.string().regex(new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{4,})")).required(),
+}
+
 function user_not_valide(user) {
     var results = Joi.validate(user, user_validation_schema);
+    return results.error;
+}
+function user_login_not_valide(user) {
+    var results = Joi.validate(user, user_login_validation_schema);
     return results.error;
 }
 
@@ -26,3 +35,4 @@ const User = mongoose.model('User',user_schema);
 
 module.exports.User = User;
 module.exports.user_not_valide = user_not_valide;
+module.exports.user_login_not_valide = user_login_not_valide;

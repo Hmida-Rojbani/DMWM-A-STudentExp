@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const { User, user_not_valide } = require('../models/user');
+const { User, user_not_valide, user_login_not_valide } = require('../models/user');
 const _ = require('lodash');
 const bcrypt = require('bcrypt');
 
@@ -26,6 +26,20 @@ router.post('/register',async (req,res)=>{
 //login
 
 router.post('/login',async (req,res)=>{
+    let errors;
+    if(errors=user_login_not_valide(req.body))
+        return res.status(400).send(errors.details[0].message);
+    let login_user = _.pick(req.body,['username','password']);
+    let user = await User.findOne({email : login_user.username});
+    if(!user)
+        return res.status(400).send('Username or password are incorrect.');
+    
+    let check = await bcrypt.compare(login_user.password, user.password);
+
+    if(!check)
+        return res.status(400).send('Username or password are incorrect.');
+    return res.send('User is logged');
+
 });
 
 
