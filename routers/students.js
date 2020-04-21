@@ -73,13 +73,27 @@ router.put('/id/:id',async (req,res)=>{
         return res.status(400).send(errors.details[0].message)
     let student = await Student.findById(req.params.id);
     if(! student)
-        return res.status(200).send('Student with this id is not found');
+        return res.status(400).send('Student with this id is not found');
+    if(req.body.class_room.class_room_id){
+        var new_class_room = await ClassRoom.findById(req.body.class_room.class_room_id);
+        if(! new_class_room)
+            return res.status(400).send('ClassRoom with this id is not found');
+    }
+    var old_class_room = await ClassRoom.findById(student.class_room.class_room_id);
     student = _.merge(student,req.body);
     // form with promise
     //student.save().then(()=>res.status(201).send(saved_student))
     //                .catch((err)=>res.status(400).send(`DB error : ${err.message}`));
     try{
+        if(req.body.class_room.class_room_id){
+            student.class_room.name=new_class_room.name;
+            old_class_room.nb_student-=1;
+            new_class_room.nb_student+=1;
+        }
         const saved_student = await student.save();
+        await old_class_room.save();
+        await new_class_room.save();
+
         return res.status(201).send(saved_student);
     }catch(err){
         return res.status(400).send(`DB error : ${err.message}`)
