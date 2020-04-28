@@ -1,0 +1,6 @@
+{
+    "db" :{
+        "prot" :"mongodb+srv://",
+        "path" : "@mongoformation-xc16w.mongodb.net/dmwmA?retryWrites=true&w=majority" 
+    }
+}

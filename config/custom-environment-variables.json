@@ -1,0 +1,6 @@
+{
+    "jwtPrivateKey" : "secret_jwt",
+    "db" : {
+        "coord" : "secret_mongo"
+    }
+}
