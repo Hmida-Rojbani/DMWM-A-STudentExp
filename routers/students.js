@@ -4,6 +4,7 @@ const _ = require('lodash');
 const { ClassRoom } = require('../models/class_room');
 const auth = require('../middlewares/auth')
 const autoris = require('../middlewares/autoris')
+const validateObjectId = require('../middlewares/validateObjectId')
 
 router.get('',async (req,res)=>{
     const students = await Student.find().populate('class_room.class_room_id');
@@ -42,10 +43,7 @@ router.post('',auth,async (req,res)=>{
 
 //get by id
 
-router.get('/id/:id',async (req,res)=>{
-    let errors;
-    if(errors=objectid_not_valid(req.params))
-        return res.status(400).send(errors.details[0].message)
+router.get('/id/:id',validateObjectId,async (req,res)=>{
     const student = await Student.findById(req.params.id);
     if(! student)
         return res.status(204).end();
