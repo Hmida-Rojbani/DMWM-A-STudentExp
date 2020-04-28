@@ -2,7 +2,8 @@ const router = require('express').Router();
 const { Student, student_not_valide, objectid_not_valid, student_opt_not_valide } = require('../models/student');
 const _ = require('lodash');
 const { ClassRoom } = require('../models/class_room');
-
+const auth = require('../middlewares/auth')
+const autoris = require('../middlewares/autoris')
 
 router.get('',async (req,res)=>{
     const students = await Student.find().populate('class_room.class_room_id');
@@ -11,7 +12,7 @@ router.get('',async (req,res)=>{
     res.send(students);
 });
 
-router.post('',async (req,res)=>{
+router.post('',auth,async (req,res)=>{
     //request body content the data 
     /*const student = new Student({
         name: req.body.name,
@@ -53,7 +54,7 @@ router.get('/id/:id',async (req,res)=>{
 
 //delete by id
 
-router.delete('/id/:id',async (req,res)=>{
+router.delete('/id/:id',[auth,autoris],async (req,res)=>{
     let errors;
     if(errors=objectid_not_valid(req.params))
         return res.status(400).send(errors.details[0].message)
@@ -65,7 +66,7 @@ router.delete('/id/:id',async (req,res)=>{
 
 //Put by id (update)
 
-router.put('/id/:id',async (req,res)=>{
+router.put('/id/:id',auth,async (req,res)=>{
     let errors;
     if(errors=objectid_not_valid(req.params))
         return res.status(400).send(errors.details[0].message)
