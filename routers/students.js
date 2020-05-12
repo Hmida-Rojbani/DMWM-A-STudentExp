@@ -43,7 +43,7 @@ router.post('',auth,async (req,res)=>{
 
 //get by id
 
-router.get('/id/:id',validateObjectId,async (req,res)=>{
+router.get('/id/:id',valateObjectId,async (req,res)=>{
     const student = await Student.findById(req.params.id);
     if(! student)
         return res.status(204).end();

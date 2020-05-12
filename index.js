@@ -1,4 +1,6 @@
-const config = require('config')
+require('express-async-errors');
+const error = require('./middlewares/error');
+const config = require('config');
 require('./db/connection')(config.get('db.prot')+config.get('db.coord')+config.get('db.path'))
 const express = require('express');
 const app_debug = require('debug')('app:debug');
@@ -16,6 +18,7 @@ app.use(morgan('dev'));
 app.use('/api/students',student_router);
 app.use('/api/class_rooms',auth,class_room_router);
 app.use('/api/users',user_router);
+app.use(error);
 
 
 app.listen(port, ()=> app_debug(`Serveur running on ${port}...`));
