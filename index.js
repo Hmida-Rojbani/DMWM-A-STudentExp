@@ -1,6 +1,9 @@
 require('express-async-errors');
 const error = require('./middlewares/error');
 const config = require('config');
+const winston = require('winston');
+winston.add(winston.transports.File,{filename:'loggers/logfile.log'})
+
 if(!process.env.secret_jwt || !process.env.secret_mongo){
     console.log('Variables are not set');
     process.exit(0);
@@ -41,4 +44,8 @@ app.use(error);
 
 
 
-app.listen(port, ()=> app_debug(`Serveur running on ${port}...`));
+app.listen(port, ()=> {
+    app_debug(`Serveur running on ${port}...`)
+    winston.info(`Serveur running on ${port}...`)
+}
+    );
