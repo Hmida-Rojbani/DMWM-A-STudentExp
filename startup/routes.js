@@ -5,8 +5,12 @@ const class_room_router = require('../routers/class_rooms');
 const user_router = require('../routers/users');
 const error = require('../middlewares/error');
 const morgan = require('morgan');
+const compression = require('compression');
+const helmet = require('helmet')
 
 module.exports = function(app) {
+    app.use(compression());
+    app.use(helmet())
     if(app.get('env')==='development')
         app.use(morgan('dev'));
     app.use(express.json());

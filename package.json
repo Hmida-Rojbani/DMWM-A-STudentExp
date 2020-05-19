@@ -5,13 +5,17 @@
   "main": "index.js",
   "scripts": {
     "test": "jest --watchAll --verbose --coverage",
-    "start": "set DEBUG=app*&&set secret_mongo=user:1234&&set secret_jwt=1234&&node index.js"
+    "start": "node index.js"
+  },
+  "engines": {
+    "node": "12.0.0"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "bcrypt": "^4.0.1",
+    "compression": "^1.7.4",
     "config": "^3.3.1",
     "debug": "^4.1.1",
     "express": "^4.17.1",
