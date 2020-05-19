@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest --watchAll --verbose --coverage",
     "start": "set DEBUG=app*&&set secret_mongo=user:1234&&set secret_jwt=1234&&node index.js"
   },
   "keywords": [],
@@ -25,5 +25,8 @@
     "morgan": "^1.10.0",
     "winston": "^2.4.0",
     "winston-mongodb": "^5.0.1"
+  },
+  "devDependencies": {
+    "jest": "^26.0.1"
   }
 }
