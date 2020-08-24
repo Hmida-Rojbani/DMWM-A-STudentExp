@@ -1,0 +1,2218 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Modele XML pour la description du format des messages internes du Guichet Unique d'Echange.
+-->
+<xs:schema elementFormDefault="qualified" targetNamespace="http://www.banque-france.fr/2006/bdf_msg"
+   xmlns:xs="http://www.w3.org/2001/XMLSchema"
+   xmlns:bdf_msg="http://www.banque-france.fr/2006/bdf_msg">
+
+   <!--
+   Bic8 ou bic11 ISO swift
+   -->
+   <xs:element name="bdf_msg">
+      <xs:annotation>
+         <xs:documentation>Balise principale du message PIVOT BdF</xs:documentation>
+      </xs:annotation>
+      <xs:complexType>
+         <xs:sequence maxOccurs="1" minOccurs="1">
+            <!--
+            En-tete d'un message de flux interne
+            -->
+            <xs:element name="msg_header" maxOccurs="1" minOccurs="1">
+               <xs:annotation>
+                  <xs:documentation>En-tte des messages PIVOT BdF</xs:documentation>
+               </xs:annotation>
+               <xs:complexType>
+                  <!--
+                  Identifiant du message
+                  -->
+                  <xs:attribute name="msg_id" type="bdf_msg:string_35s" use="required"> </xs:attribute>
+                  <!--
+                  Acteur interne identifiant la provenance du message.
+                  -->
+                  <xs:attribute name="from" type="bdf_msg:string_alpha3s" use="required"> </xs:attribute>
+                  <!--
+                  Acteur interne identifiant le destinataire du message.
+                  -->
+                  <xs:attribute name="to" type="bdf_msg:string_alpha3s" use="required"> </xs:attribute>
+                  <!--
+                  Date et heure d'mission du message
+                  -->
+                  <xs:attribute name="emission_date" type="xs:dateTime" use="required"> </xs:attribute>
+                  <!--
+                  Tmoin de la duplication du message.
+                  -->
+                  <xs:attribute name="possible_duplicate" type="bdf_msg:booleen" use="required"> </xs:attribute>
+                  <!--
+                  Tmoin du type de service de paiement
+                  -->
+                  <xs:attribute name="service_type_identifier" type="bdf_msg:nombre_3n_fixe"
+                     use="optional"> </xs:attribute>
+                  <!--
+                  Tmoin de la rfrence end-to-end de la transaction de paiement
+                  -->
+                  <xs:attribute name="unique_end_to_end_transaction_reference"
+                     type="bdf_msg:string_36s" use="optional"> </xs:attribute>
+               </xs:complexType>
+            </xs:element>
+            <xs:choice maxOccurs="1" minOccurs="1">
+               <!--
+               Lot de messages internes bdf
+               -->
+               <xs:element name="stream" maxOccurs="1" minOccurs="1">
+                  <xs:complexType>
+                     <xs:sequence maxOccurs="1" minOccurs="1">
+                        <!--
+                        Message interne faisant partie d'un lot.
+                        -->
+                       <!-- <xs:element maxOccurs="unbounded" minOccurs="1" ref="bdf_msg:bdf_msg"/>-->
+                     </xs:sequence>
+                     <!--
+                     Nombre de messages internes bdf dans le lot
+                     -->
+                     <xs:attribute name="nb_msg" type="bdf_msg:nombre_3n" use="required">
+                     </xs:attribute>
+                  </xs:complexType>
+               </xs:element>
+               <xs:group maxOccurs="1" minOccurs="1" ref="bdf_msg:banking_messages_grp"> </xs:group>
+               <xs:group maxOccurs="1" minOccurs="1" ref="bdf_msg:advice_messages_grp"> </xs:group>
+               <xs:group maxOccurs="1" minOccurs="1" ref="bdf_msg:accounting_messages_grp"> </xs:group>
+               <xs:group maxOccurs="1" minOccurs="1" ref="bdf_msg:static_data_messages_grp"> </xs:group>
+               <xs:group maxOccurs="1" minOccurs="1" ref="bdf_msg:icm_messages_grp"> </xs:group>
+               <xs:group maxOccurs="1" minOccurs="1" ref="bdf_msg:sag_messages_grp"> </xs:group>
+               <xs:group maxOccurs="1" minOccurs="1" ref="bdf_msg:batch_messages_grp"> </xs:group>
+               <!--
+               Message contenant un fichier transfere par le GUe.
+               Les fichiers sont transferes sans transformation ni controle.
+               Exemple : fichier factures PM ou consommes
+               -->
+               <xs:element name="transit_file" maxOccurs="1" minOccurs="1">
+                  <xs:complexType>
+                     <xs:sequence maxOccurs="1" minOccurs="1">
+                        <!--
+                        Nom du fichier transfr
+                        -->
+                        <xs:element name="file_name" maxOccurs="1" minOccurs="1"
+                           type="bdf_msg:string_file"/>
+                        <!--
+                        Fichier transfr
+                        -->
+                        <xs:element name="buffer" maxOccurs="1" minOccurs="1" type="xs:string"/>
+                     </xs:sequence>
+                  </xs:complexType>
+               </xs:element>
+               <xs:element name="transit_file_ITR" maxOccurs="1" minOccurs="1">
+                  <xs:complexType>
+                     <xs:sequence maxOccurs="1" minOccurs="1">
+                        <xs:element name="nom_fichier" maxOccurs="1" minOccurs="1"
+                           type="bdf_msg:string_file"/>
+                        <xs:element name="index" maxOccurs="1" minOccurs="1"
+                           type="bdf_msg:index_itr"/>
+                        <xs:element name="date_valeur" maxOccurs="1" minOccurs="1" type="xs:date"/>
+                        <xs:element name="buffer" maxOccurs="1" minOccurs="1" type="xs:string"/>
+                        <xs:element name="horodatage_SSP" maxOccurs="1" minOccurs="0"
+                           type="xs:dateTime"/>
+                     </xs:sequence>
+                  </xs:complexType>
+               </xs:element>
+               <xs:element name="ligne_credit_ITR" maxOccurs="1" minOccurs="1">
+                  <xs:complexType>
+                     <xs:sequence maxOccurs="1" minOccurs="1">
+                        <xs:element name="ligne_de_credit" maxOccurs="1" minOccurs="1">
+                           <xs:complexType>
+                              <xs:attribute name="horodatage_SSP" type="xs:dateTime" use="required"> </xs:attribute>
+                              <xs:attribute name="bic_participant" type="bdf_msg:bic_swift"
+                                 use="required"> </xs:attribute>
+                              <xs:attribute name="montant" type="bdf_msg:montant_icm" use="required"
+                                 > </xs:attribute>
+                           </xs:complexType>
+                        </xs:element>
+                     </xs:sequence>
+                     <xs:attribute name="index" type="bdf_msg:index_itr" use="required">
+                     </xs:attribute>
+                  </xs:complexType>
+               </xs:element>
+               <xs:element name="solde_debut_journee">
+                  <xs:complexType>
+                     <xs:sequence maxOccurs="unbounded" minOccurs="0">
+                        <xs:element name="solde_enregistrement">
+                           <xs:complexType>
+                              <xs:attribute name="sens" type="bdf_msg:liste_sens_comptable"> </xs:attribute>
+                              <xs:attribute name="montant" type="bdf_msg:montant"> </xs:attribute>
+                              <xs:attribute name="numero_compte" type="bdf_msg:account_ssp"> </xs:attribute>
+                              <xs:attribute name="bic_id" type="bdf_msg:bic_swift"> </xs:attribute>
+                           </xs:complexType>
+                        </xs:element>
+                     </xs:sequence>
+                     <xs:attribute name="date_comptable" type="xs:date"> </xs:attribute>
+                     <xs:attribute name="nb_details" type="bdf_msg:nb_details"> </xs:attribute>
+                     <xs:attribute name="index" type="bdf_msg:index_itr"> </xs:attribute>
+                  </xs:complexType>
+               </xs:element>
+            </xs:choice>
+         </xs:sequence>
+         <!--
+         Numro de version du modle.
+         -->
+         <xs:attribute name="version" fixed="01.00" type="bdf_msg:num_version" use="required">
+         </xs:attribute>
+      </xs:complexType>
+   </xs:element>
+   <xs:simpleType name="account_ssp">
+      <xs:annotation>
+         <xs:documentation>Numro de compte du participant</xs:documentation>
+      </xs:annotation>
+      <xs:restriction base="bdf_msg:string_34s">
+         <xs:pattern value="[A-Z]{2}.*"/>
+      </xs:restriction>
+   </xs:simpleType>
+
+   <!--
+   Messages du domaine Comptabilit :
+   - general ledger
+   - relev de compte (
+   - relev des soldes (REFOB)
+   -->
+   <xs:group name="accounting_messages_grp">
+      <xs:choice>
+         <!--
+         Message General Ledger transmis par le GU  la Direction de la Comptabilit Gnrale
+         -->
+         <xs:element name="general_ledger" maxOccurs="1" minOccurs="1">
+            <xs:complexType>
+               <xs:choice maxOccurs="1" minOccurs="1">
+                  <xs:sequence maxOccurs="1" minOccurs="1">
+                     <!--
+                     structure propre au GL en provenance du PM (Bloc AA)
+                     -->
+                     <xs:element name="information_compte_bce" maxOccurs="1" minOccurs="1">
+                        <xs:complexType>
+                           <xs:sequence maxOccurs="1" minOccurs="1">
+                              <!--
+                              Position du NCB ECB Account de la BDF
+                              -->
+                              <xs:element name="soldes" maxOccurs="1" minOccurs="1"
+                                 type="bdf_msg:soldes_journee"/>
+                              <xs:element name="ajustement_fin_journee" maxOccurs="unbounded"
+                                 minOccurs="0">
+                                 <xs:complexType>
+                                    <xs:sequence maxOccurs="1" minOccurs="1">
+                                       <!--
+                                       Ajustement de fin de journe au dbit
+                                       -->
+                                       <xs:element name="ajustement_debit" maxOccurs="1"
+                                          minOccurs="1" type="bdf_msg:montant"/>
+                                       <!--
+                                       Ajustement de fin de journe au crdit
+                                       -->
+                                       <xs:element name="ajustement_credit" maxOccurs="1"
+                                          minOccurs="1" type="bdf_msg:montant"/>
+                                    </xs:sequence>
+                                    <xs:attribute name="code_pays" type="bdf_msg:code_pays">
+                                    </xs:attribute>
+                                 </xs:complexType>
+                              </xs:element>
+                           </xs:sequence>
+                           <!--
+                           Groupe d'attributs reprsentant les informations sur le numro de compte et le critre catco+ZR+R/O,
+                           -->
+                           <xs:attributeGroup ref="bdf_msg:att_compte_grp"> </xs:attributeGroup>
+                        </xs:complexType>
+                     </xs:element>
+                     <!--
+                     structure propre au GL en provenance du PM (Bloc BB)
+                     -->
+                     <xs:element name="information_compte_banque_centrale" maxOccurs="1"
+                        minOccurs="1">
+                        <xs:complexType>
+                           <xs:sequence maxOccurs="1" minOccurs="1">
+                              <!--
+                              Position du compte PM de la BDF
+                              -->
+                              <xs:element name="soldes" maxOccurs="1" minOccurs="1"
+                                 type="bdf_msg:soldes_journee"/>
+                              <!--
+                              Situation du compte PM de la BDF vis  vis des participants franais
+                              -->
+                              <xs:element name="masses_debit_credit_participants_nationaux"
+                                 maxOccurs="1" minOccurs="1">
+                                 <xs:complexType>
+                                    <!--
+                                    Cumuls de dbits pour le compte PM de la BDF vis  vis des participants franais pour une journe.
+                                    -->
+                                    <xs:attribute name="masse_debits_du_jour" type="bdf_msg:montant"
+                                       use="required"> </xs:attribute>
+                                    <!--
+                                    Cumuls de crdits pour le compte PM de la BDF vis  vis des participants franais pour une journe.
+                                    -->
+                                    <xs:attribute name="masse_credits_du_jour"
+                                       type="bdf_msg:montant" use="required"> </xs:attribute>
+                                 </xs:complexType>
+                              </xs:element>
+                              <!--
+                              Situation du compte PM de la BDF vis  vis de chacun des autres pays de T2
+                              -->
+                              <xs:element name="masses_debit_credit_autres_banques_centrales"
+                                 maxOccurs="unbounded" minOccurs="0">
+                                 <xs:complexType>
+                                    <xs:attribute name="code_pays" type="bdf_msg:code_pays"> </xs:attribute>
+                                    <!--
+                                    Cumuls de dbits pour le compte PM de la BDF vis  vis d'un autre pays de T2 pour une journe.
+                                    -->
+                                    <xs:attribute name="masse_debits_du_jour" type="bdf_msg:montant"
+                                       use="required"> </xs:attribute>
+                                    <!--
+                                    Cumuls de crdits pour le compte PM de la BDF vis  vis d'un autre pays de T2 pour une journe.
+                                    -->
+                                    <xs:attribute name="masse_credits_du_jour"
+                                       type="bdf_msg:montant" use="required"> </xs:attribute>
+                                 </xs:complexType>
+                              </xs:element>
+                           </xs:sequence>
+                           <!--
+                           Groupe d'attributs reprsentant les informations sur le numro de compte et le critre catco+ZR+R/O,
+                           -->
+                           <xs:attributeGroup ref="bdf_msg:att_compte_grp"> </xs:attributeGroup>
+                        </xs:complexType>
+                     </xs:element>
+                     <!--
+                     structure propre au GL en provenance du PM
+                     -->
+                     <xs:element name="information_comptes_clients" maxOccurs="1" minOccurs="0">
+                        <xs:complexType>
+                           <xs:sequence maxOccurs="1" minOccurs="1">
+                              <!--
+                              Positions (soldes dbut et fin, cumuls dbits et crdits) pour un compte PM (participant FR) et une journe.
+                              -->
+                              <xs:element name="masses_debit_credit_comptes_clients"
+                                 maxOccurs="unbounded" minOccurs="1"
+                                 type="bdf_msg:masses_debit_credit"/>
+                              <!--
+                              Positions (soldes dbut et fin, cumuls dbits et crdits) pour un sous-compte PM (participant FR) et une journe.
+                              -->
+                              <xs:element name="masses_debit_credit_sous_comptes_clients"
+                                 maxOccurs="unbounded" minOccurs="1"
+                                 type="bdf_msg:masses_debit_credit"/>
+                           </xs:sequence>
+                        </xs:complexType>
+                     </xs:element>
+                  </xs:sequence>
+                  <xs:sequence maxOccurs="1" minOccurs="1">
+                     <!--
+                     structure propre au GL en provenance du HAM ou du CM.
+                     Positions (soldes dbut et fin, cumuls dbits et crdits) pour un compte HAM (participant FR) et une journe.
+                     -->
+                     <xs:element name="masses_debit_credit" maxOccurs="unbounded" minOccurs="1"
+                        type="bdf_msg:masses_debit_credit"/>
+                  </xs:sequence>
+                  <xs:sequence maxOccurs="1" minOccurs="1">
+                     <!--
+                     structure propre au GL en provenance du SFM (bloc facilits de dpts).
+                     Positions (soldes dbut et fin, cumuls dbits et crdits) pour un compte SFM Facilit de Dpot (participant FR) et une journe.
+                     -->
+                     <xs:element name="masses_facilites_de_depot" maxOccurs="unbounded"
+                        minOccurs="1" type="bdf_msg:masses_debit_credit"/>
+                     <!--
+                     structure propre au GL en provenance du SFM (bloc
+                     prts marginaux).
+                     Positions (soldes dbut et fin, cumuls dbits et crdits) pour un compte SFM Prt Marginal (participant FR) et une journe.
+                     -->
+                     <xs:element name="masses_facilites_pret_marginal" maxOccurs="unbounded"
+                        minOccurs="1" type="bdf_msg:masses_debit_credit"/>
+                  </xs:sequence>
+               </xs:choice>
+               <!--
+               Date de la journe comptable  laquelle les donnes sont applicables.
+               -->
+               <xs:attribute name="date_comptable" type="xs:date" use="required"> </xs:attribute>
+               <!--
+               BIC du module SSP metteur (PM, HAM, SFM, CM)
+               -->
+               <xs:attribute name="bic_emetteur" type="bdf_msg:bic11" use="required"> </xs:attribute>
+               <xs:attribute name="module" type="xs:string" use="required"> </xs:attribute>
+            </xs:complexType>
+         </xs:element>
+         <!--
+         Relev des soldes des tablissements soumis  rserves obligatoires (RO) envoy en fin de journe  REFOB.
+         -->
+         <xs:element name="balance_statement" maxOccurs="1" minOccurs="1">
+            <xs:complexType>
+               <xs:sequence maxOccurs="1" minOccurs="1">
+                  <!--
+                  Dtail du solde pour un tablissement soumis  RO.
+                  -->
+                  <xs:element name="balance_detail" maxOccurs="unbounded" minOccurs="1">
+                     <xs:complexType>
+                        <!--
+                        Sens comptable du solde de l'tablissement soumis  RO.
+                        -->
+                        <xs:attribute name="sens" type="bdf_msg:liste_sens_comptable" use="required"
+                           > </xs:attribute>
+                        <!--
+                        Numro de compte d'un particpant SSP.
+                        -->
+                        <xs:attribute name="account" type="bdf_msg:account_ssp" use="required"> </xs:attribute>
+                        <!--
+                        Groupe d'attributs montant devise rattach au participant SSP
+                        -->
+                        <xs:attributeGroup ref="bdf_msg:att_montant_devise_grp">
+                        </xs:attributeGroup>
+                     </xs:complexType>
+                  </xs:element>
+               </xs:sequence>
+               <!--
+               Nombre de dtails dans le relev.
+               -->
+               <xs:attribute name="nb_details" type="bdf_msg:nombre_4n" use="required"> </xs:attribute>
+               <!--
+               Date de valeur
+               -->
+               <xs:attribute name="value_date" type="xs:date" use="required"> </xs:attribute>
+            </xs:complexType>
+         </xs:element>
+         <!--
+         Relev d'oprations quotidien.
+         Il y a un relev pour chacun des comptes dans le PM et le HAM.
+         -->
+         <xs:element name="operation_statement" maxOccurs="1" minOccurs="1">
+            <xs:complexType>
+               <xs:sequence maxOccurs="1" minOccurs="1">
+                  <!--
+                  Balance de dbut de journe
+                  -->
+                  <xs:element name="opening_balance" maxOccurs="1" minOccurs="1">
+                     <xs:complexType>
+                        <!--
+                        Sens, date, montant et devise de la balance d'ouverture d'un relev d'oprations.
+                        -->
+                        <xs:attributeGroup ref="bdf_msg:att_operation_grp"> </xs:attributeGroup>
+                     </xs:complexType>
+                  </xs:element>
+                  <!--
+                  Dtails d'une transaction
+                  -->
+                  <xs:element name="operation_detail" maxOccurs="unbounded" minOccurs="0">
+                     <xs:complexType>
+                        <!--
+                        Rfrence de l'opration
+                        -->
+                        <xs:attribute name="reference" type="bdf_msg:string_16s" use="required"> </xs:attribute>
+                        <!--
+                        Sens, date, montant et devise d'une opration dans un relev d'oprations.
+                        -->
+                        <xs:attributeGroup ref="bdf_msg:att_operation_grp"> </xs:attributeGroup>
+                     </xs:complexType>
+                  </xs:element>
+                  <!--
+                  Balance de fin de journe
+                  -->
+                  <xs:element name="closing_balance" maxOccurs="1" minOccurs="1">
+                     <xs:complexType>
+                        <!--
+                        Sens, date, montant et devise de la balance de fermeture d'un relev d'oprations.
+                        -->
+                        <xs:attributeGroup ref="bdf_msg:att_operation_grp"> </xs:attributeGroup>
+                     </xs:complexType>
+                  </xs:element>
+               </xs:sequence>
+               <!--
+               Rfrence du relev d'oprations
+               -->
+               <xs:attribute name="transaction_reference_number" type="bdf_msg:string_16s"
+                  use="required"> </xs:attribute>
+               <!--
+               Numro de compte PM ou HAM de la BDF
+               -->
+               <xs:attribute name="account_id" type="bdf_msg:account_ssp" use="required"> </xs:attribute>
+               <!--
+               Numro du relev d'oprations.
+               -->
+               <xs:attribute name="statement_number" type="bdf_msg:nombre_5n_fixe" use="required"> </xs:attribute>
+               <!--
+               Date de valeur
+               -->
+               <xs:attribute name="value_date" type="xs:date" use="required"> </xs:attribute>
+            </xs:complexType>
+         </xs:element>
+      </xs:choice>
+   </xs:group>
+   <xs:group name="acct_grp">
+      <xs:sequence>
+         <xs:element name="account">
+            <xs:complexType>
+               <xs:sequence minOccurs="0">
+                  <xs:element minOccurs="0" name="external_scheme" type="bdf_msg:string_35s"/>
+                  <xs:element minOccurs="0" name="issuer" type="bdf_msg:string_35s"/>
+                  <xs:element minOccurs="0" name="proxy">
+                     <xs:complexType>
+                        <xs:sequence>
+                           <xs:element name="p" type="xs:string"/>
+                        </xs:sequence>
+                        <xs:attribute name="type" type="bdf_msg:string_35s"/>
+                     </xs:complexType>
+                  </xs:element>
+               </xs:sequence>
+               <xs:attribute name="id" type="bdf_msg:account_ssp" use="required"/>
+               <xs:attribute name="name" type="bdf_msg:string_70s"/>
+               <xs:attribute name="currency" type="bdf_msg:devise"/>
+               <xs:attribute name="type" type="bdf_msg:string_35s"/>
+            </xs:complexType>
+         </xs:element>
+      </xs:sequence>
+   </xs:group>
+   <xs:complexType name="actor">
+      <xs:annotation>
+         <xs:documentation>Structure gnrique d'acteur financier</xs:documentation>
+      </xs:annotation>
+      <xs:sequence>
+         <xs:choice minOccurs="0">
+            <xs:group maxOccurs="8" minOccurs="0" ref="bdf_msg:elem_ligne_grp"> </xs:group>
+            <xs:group maxOccurs="1" minOccurs="0" ref="bdf_msg:auth_grp"> </xs:group>
+         </xs:choice>
+         <xs:group minOccurs="0" ref="bdf_msg:contact_grp">
+            <xs:annotation>
+               <xs:documentation>Uniquement prsent pour les CustomerTransfer/pacs.008 sur le role "head" au dbit</xs:documentation>
+            </xs:annotation>
+         </xs:group>
+         <xs:group maxOccurs="1" minOccurs="0" ref="bdf_msg:acct_grp"/>
+      </xs:sequence>
+      <xs:attribute name="role" type="bdf_msg:liste_role_acteur"/>
+      <xs:attribute name="bic" type="bdf_msg:bic_swift" use="optional"> </xs:attribute>
+      <xs:attribute name="location" type="bdf_msg:string_35s" use="optional"> </xs:attribute>
+      <xs:attribute name="lei" type="bdf_msg:lei_ident"/>
+   </xs:complexType>
+   <xs:group name="advice_messages_grp">
+      <xs:choice>
+         <!--
+         Avis d'acquisition : acceptation / rejet du message d'origine par le destinataire
+         -->
+         <xs:element name="message_advice" maxOccurs="1" minOccurs="1">
+            <xs:annotation>
+               <xs:documentation>Avis/acquittements de messages BO->GU</xs:documentation>
+            </xs:annotation>
+            <xs:complexType>
+               <!--
+               Groupe d'attributs communs aux avis.
+               -->
+               <xs:attributeGroup ref="bdf_msg:att_avis_grp"> </xs:attributeGroup>
+            </xs:complexType>
+         </xs:element>
+         <!--
+         Avis d'opration : imputation / rejet d'un message financier par la SSP.
+         Avis de prise en charge ou de non prise en charge d'une demande de traitement ICM par la SSP.
+         -->
+         <xs:element name="financial_advice" maxOccurs="1" minOccurs="1">
+            <xs:annotation>
+               <xs:documentation>Acquittements financiers (pacs.002/admi.007) GU->BO</xs:documentation>
+            </xs:annotation>
+            <xs:complexType>
+               <!--
+               Groupe d'attributs communs aux avis.
+               -->
+               <xs:attributeGroup ref="bdf_msg:att_avis_grp"> </xs:attributeGroup>
+            </xs:complexType>
+         </xs:element>
+      </xs:choice>
+   </xs:group>
+   <xs:attributeGroup name="att_avis_grp">
+      <!--
+      Spcifie si le message d'origine a t correctement trait.
+      -->
+      <xs:attribute name="status" type="bdf_msg:booleen" use="required"> </xs:attribute>
+      <!--
+      Identifiant du message d'origine.
+      -->
+      <xs:attribute name="original_msg_id" type="bdf_msg:string_35s" use="required"> </xs:attribute>
+      <!--
+      Spcifie la date de rception par le destinataire (acteur interne) du message d'origine.
+      -->
+      <xs:attribute name="input_date" type="xs:dateTime" use="required"> </xs:attribute>
+      <!--
+      Spcifie la rfrence du message "financier" d'origine.
+      -->
+      <xs:attribute name="original_payment_reference" type="bdf_msg:string_35s" use="optional"> </xs:attribute>
+      <!--
+      Libell du rejet
+      -->
+      <xs:attribute name="error_reason" type="bdf_msg:xs_string_140" use="optional"> </xs:attribute>
+      <!--
+      Spcifie le code du rejet.
+      -->
+      <xs:attribute name="error_code" type="bdf_msg:string_12s" use="optional"> </xs:attribute>
+   </xs:attributeGroup>
+   <xs:attributeGroup name="att_compte_grp">
+      <xs:attribute name="numero_compte" type="bdf_msg:account_ssp" use="required"> </xs:attribute>
+      <!--
+      Informations rfrentielles sur le participant
+      -->
+      <xs:attribute name="cateco_ZR_RO" type="bdf_msg:string_cateco_ZR_RO" use="optional">
+      </xs:attribute>
+   </xs:attributeGroup>
+   <xs:attributeGroup name="att_flux_com_grp">
+      <!--
+      Ordre de priorit pour le rglement.
+      -->
+      <xs:attribute name="banking_priority" default="N" type="bdf_msg:liste_priorite" use="optional"
+         > </xs:attribute>
+      <!--
+      Rfrence d'un message  financier.
+      Pour une date de valeur, la rfrence d'un message financier doit tre unique dans le Gu, quelquesoit l'origine du message (tous BO confondus).
+      La rfrence des messages financiers mis par les BO doit tre renseigne conformment au document "MIGTT2_Guide_fonctionnel_BO_v1.0.doc".
+      -->
+      <xs:attribute name="reference" type="bdf_msg:string_35s" use="required"> </xs:attribute>
+      <!--
+      Date de valeur
+      -->
+      <xs:attribute name="value_date" type="xs:date" use="required"> </xs:attribute>
+      <!--
+      Montant et devise du flux financier
+      -->
+      <xs:attributeGroup ref="bdf_msg:att_montant_devise_grp"> </xs:attributeGroup>
+      <!--
+      Critre de lettrage. Rfrence ncessaire pour la constitution des CRO.
+      -->
+      <xs:attribute name="lettering" type="bdf_msg:string_alpha20s" use="required"> </xs:attribute>
+      <!--
+      Code de dclaration statistique  la balance des paiements.
+      -->
+      <xs:attribute name="balance_of_payments" type="bdf_msg:liste_balance_payments" use="optional">
+      </xs:attribute>
+   </xs:attributeGroup>
+   <xs:attributeGroup name="att_montant_devise_grp">
+      <!--
+      Montant exprime en fonction de la devise
+      -->
+      <xs:attribute name="amount" type="bdf_msg:montant" use="required"> </xs:attribute>
+      <!--
+      Code de la devise
+      -->
+      <xs:attribute name="currency" type="bdf_msg:devise" use="required"> </xs:attribute>
+   </xs:attributeGroup>
+   <xs:attributeGroup name="att_operation_grp">
+      <!--
+      Sens du mouvement comptable
+      -->
+      <xs:attribute name="sens" type="bdf_msg:liste_sens_comptable" use="required"> </xs:attribute>
+      <!--
+      Montant et devise de l'opration dans un relev d'oprations.
+      -->
+      <xs:attributeGroup ref="bdf_msg:att_montant_devise_grp"> </xs:attributeGroup>
+   </xs:attributeGroup>
+   <xs:attributeGroup name="att_time_grp">
+      <!--
+      Prcise l"heure "au plus tt" de la mise en rglement.
+      -->
+      <xs:attribute name="frotime" type="xs:time" use="optional"> </xs:attribute>
+      <!--
+      Prcise l"heure "au plus tard" du rglement.
+      Si l'heure est dpasse, le message est rejet.
+      -->
+      <xs:attribute name="rejtime" type="xs:time" use="optional"> </xs:attribute>
+      <!--
+      Prcise l"heure "au plus tard" du rglement.
+      Si l'heure est dpasse, un avertissement est envoy.
+      -->
+      <xs:attribute name="tiltime" type="xs:time" use="optional"> </xs:attribute>
+      <!--
+      Prcise l'heure d'imputation des flux en provenance du module HAM
+      ou l'heure d'imputation sur la banque en mission pour les flux interlinking.
+      -->
+      <xs:attribute name="sndtime" type="xs:time" use="optional"> </xs:attribute>
+      <!--
+      Prcise l'heure d'imputation sur la banque en rception pour les flux interlinking.
+      -->
+      <xs:attribute name="rnctime" type="xs:time" use="optional"> </xs:attribute>
+   </xs:attributeGroup>
+   <xs:group name="auth_grp">
+      <xs:sequence>
+         <!--
+         Identification avec code d'authentification.
+         utilis uniquement pour l'acteur financier head au dbit
+         -->
+         <xs:element name="auth_id" maxOccurs="1" minOccurs="0">
+            <xs:complexType>
+               <xs:sequence maxOccurs="1" minOccurs="1">
+                  <!--
+                  Identification par authentification.
+                  -->
+                  <xs:element name="id" maxOccurs="1" minOccurs="1" type="bdf_msg:string_30s"/>
+                  <!--
+                  Institution ou autorit mettrice du numro d'identification
+                  -->
+                  <xs:element name="id_issuer" maxOccurs="1" minOccurs="0" type="bdf_msg:string_30s"
+                  />
+               </xs:sequence>
+               <!--
+               Code d'authentification.
+               -->
+               <xs:attribute name="code" type="bdf_msg:liste_auth_code" use="required"> </xs:attribute>
+               <!--
+               Code pays pour l'identification par code d'authentification.
+               -->
+               <xs:attribute name="country_code" type="bdf_msg:code_pays" use="optional"> </xs:attribute>
+               <xs:attribute default="other" name="type">
+                  <xs:simpleType>
+                     <xs:restriction base="xs:string">
+                        <xs:enumeration value="organisation"/>
+                        <xs:enumeration value="other"/>
+                     </xs:restriction>
+                  </xs:simpleType>
+               </xs:attribute>
+            </xs:complexType>
+         </xs:element>
+         <!--
+         Dtails sur l'authentification
+         -->
+         <xs:element name="auth_details" maxOccurs="1" minOccurs="1">
+            <xs:complexType>
+               <xs:sequence maxOccurs="1" minOccurs="1">
+                  <!--
+                  Dtail sur l'authentification
+                  -->
+                  <xs:element name="auth_detail" maxOccurs="unbounded" minOccurs="1">
+                     <xs:complexType>
+                        <xs:sequence maxOccurs="1" minOccurs="0">
+                           <!--
+                           Information sur le client telle que :
+                           nom, adresse, lieu de naissance, numro d'identification par une institution, numro d'identification nationale,
+                           -->
+                           <xs:element name="information" maxOccurs="1" minOccurs="1"
+                              type="bdf_msg:string_33s"/>
+                           <!--
+                           Institution mettrice du numro de client
+                           utilis uniquement pour l'acteur head au dbit
+                           -->
+                           <xs:element name="info_issuer" maxOccurs="1" minOccurs="0"
+                              type="bdf_msg:string_33s"/>
+                        </xs:sequence>
+                        <!--
+                        Code type du dtail sur l'authentification
+                        -->
+                        <xs:attribute name="code" type="bdf_msg:auth_type" use="required"> </xs:attribute>
+                        <!--
+                        Rang associ au code type de dtail.
+                        Les dtails seront considrs selon l'ordre croissant du code type puis du rang associ pour chacun des codes.
+                        -->
+                        <xs:attribute name="rank" type="bdf_msg:rank_type" use="optional"> </xs:attribute>
+                        <!--
+                        Code pays associ au dtail.
+                        -->
+                        <xs:attribute name="country_code" type="bdf_msg:code_pays" use="optional"> </xs:attribute>
+                        <!--
+                        Date de naissance du client
+                        utilis uniquement pour l acteur financier head au dbit
+                        -->
+                        <xs:attribute name="birth_date" type="xs:date" use="optional">
+                        </xs:attribute>
+                     </xs:complexType>
+                  </xs:element>
+               </xs:sequence>
+            </xs:complexType>
+         </xs:element>
+      </xs:sequence>
+   </xs:group>
+   <xs:simpleType name="auth_type">
+      <xs:restriction base="xs:string">
+         <xs:pattern value="[1-8]{1}"/>
+      </xs:restriction>
+   </xs:simpleType>
+
+   <!--
+   Messages de type financier :
+   - virement bancaire
+   - opration de dbit direct
+   - virement de clientle
+   -->
+   <xs:group name="banking_messages_grp">
+      <xs:choice>
+         <!--
+         Message financier relatif  une opration bancaire
+         -->
+         <xs:element name="bank_operation" maxOccurs="1" minOccurs="1">
+            <xs:annotation>
+               <xs:documentation>Type de message BankTransfer/pacs.009 ou BankWithdrawal/pacs.010</xs:documentation>
+            </xs:annotation>
+            <xs:complexType>
+               <!--
+               Groupe d'lments elem_flux_com_grp spcifique  une opration bancaire.
+               -->
+               <!--
+               Spcifie le type du message (C pour virement D pour dbit direct)
+               -->
+               <xs:sequence>
+                  <xs:group ref="bdf_msg:elem_flux_com_grp"/>
+                  <xs:element name="customer_transfer_details" maxOccurs="1" minOccurs="0">
+                     <xs:annotation>
+                        <xs:documentation>Uniquement pour les BankTransfer/pacs.009 COV</xs:documentation>
+                     </xs:annotation>
+                     <xs:complexType>
+                        <xs:sequence>
+                           <!--
+                  Liste des acteurs financiers au dbit et au crdit
+                  -->
+                           <xs:element name="ctd_financial_actors" maxOccurs="2" minOccurs="2">
+                              <xs:complexType>
+                                 <xs:sequence maxOccurs="1" minOccurs="1">
+                                    <!--
+                           Spcifie un acteur financier (institution ou client)
+                           -->
+                                    <xs:element name="ctd_financial_actor" maxOccurs="10"
+                                       minOccurs="1" type="bdf_msg:actor"> </xs:element>
+                                 </xs:sequence>
+                                 <!--
+                        Sens du mouvement du compte des acteurs.
+                        -->
+                                 <xs:attribute name="sens" type="bdf_msg:liste_sens_comptable"
+                                    use="required"> </xs:attribute>
+                              </xs:complexType>
+                           </xs:element>
+                           <!--
+                  Informations transmises au rcepteur
+                  -->
+                           <xs:element name="ctd_sender_to_receiver_information" maxOccurs="1"
+                              minOccurs="0">
+                              <xs:complexType>
+                                 <!--
+                        Lignes comportant les informations communiques par l'metteur et destines au rcepteur.
+                        -->
+                                 <xs:group maxOccurs="unbounded" minOccurs="1"
+                                    ref="bdf_msg:elem_ligne_grp"> </xs:group>
+                              </xs:complexType>
+                           </xs:element>
+                           <!--
+                  Spcifie la devise et le montant de l'instruction.
+                  -->
+                           <xs:element name="ctd_instructed_amount" maxOccurs="1" minOccurs="0">
+                              <xs:complexType>
+                                 <!--
+                        Montant et devise de l'instruction dans un virement de clientle.
+                        -->
+                                 <xs:attributeGroup ref="bdf_msg:att_montant_devise_grp">
+                                 </xs:attributeGroup>
+                              </xs:complexType>
+                           </xs:element>
+                           <!--
+                  Information sur le paiement. Spcifie soit les dtails d'une transaction individuelle, soit une rfrence  un message contenant les dtails devant tre transmis au client bnficiaire.
+                  -->
+                           <xs:element minOccurs="0" name="ctd_instruction_codes">
+                              <xs:complexType>
+                                 <xs:group ref="bdf_msg:instr_grp"/>
+                              </xs:complexType>
+                           </xs:element>
+                           <xs:element name="ctd_remittance_information" maxOccurs="1" minOccurs="0">
+                              <xs:complexType>
+                                 <!--
+                        Lignes comportant soit les dtails d'une transaction individuelle, soit une rfrence  un message contenant les dtails devant tre transmis au client bnficiaire.
+                        -->
+                                 <xs:group maxOccurs="unbounded" minOccurs="1"
+                                    ref="bdf_msg:elem_ligne_grp"> </xs:group>
+                              </xs:complexType>
+                           </xs:element>
+                        </xs:sequence>
+                     </xs:complexType>
+                  </xs:element>
+               </xs:sequence>
+               <xs:attribute name="type" type="bdf_msg:liste_sens_comptable" use="required"> </xs:attribute>
+               <!--
+               Spcifie la rfrence d'origine
+               -->
+               <xs:attribute name="related_reference" default="NONREF" type="bdf_msg:string_35s"
+                  use="optional"> </xs:attribute>
+               <!--
+               Demande de gnration d'un ordre de remboursement.
+               -->
+               <xs:attribute name="reimbursement_generation" default="N" type="bdf_msg:booleen"
+                  use="optional"> </xs:attribute>
+               <!--
+               Groupe d'attributs spcifiques  l'heure de rglement dans une opration bancaire.
+               -->
+               <xs:attributeGroup ref="bdf_msg:att_time_grp"> </xs:attributeGroup>
+               <!--
+               Groupe d'attributs communs aux flux financiers.
+               Ce groupe comporte notamment la rfrence, le montant, la devise et la date de valeur.
+               -->
+               <xs:attributeGroup ref="bdf_msg:att_flux_com_grp"> </xs:attributeGroup>
+               <!--
+               Si cet attribut vaut "Y" alors le virement bancaire est un virement bancaire de couverture, s'il vaut une autre valeur ou est absent alors c'est un virement bancaire ordinaire
+               -->
+               <xs:attribute name="cover" type="bdf_msg:booleen"> </xs:attribute>
+            </xs:complexType>
+         </xs:element>
+         <!--
+         Flux financier : virement de clientle
+         -->
+         <xs:element name="customer_transfer" maxOccurs="1" minOccurs="1">
+            <xs:annotation>
+               <xs:documentation>Type de message CustomerTransfer/pacs.008</xs:documentation>
+            </xs:annotation>
+            <xs:complexType>
+               <xs:sequence maxOccurs="1" minOccurs="1">
+                  <!--
+                  Groupe d'lments elem_flux_com_grp spcifique au virement de clientle
+                 
+                  -->
+                  <xs:group maxOccurs="1" minOccurs="1" ref="bdf_msg:elem_flux_com_grp"> </xs:group>
+                  <!--
+                  Liste d'instructions dans les virements de clientle
+                  -->
+                  <!--
+                  Spcifie la devise et le montant de l'instruction.
+                  -->
+                  <xs:element name="instructed_amount" maxOccurs="1" minOccurs="1">
+                     <xs:complexType>
+                        <!--
+                        Montant et devise de l'instruction dans un virement de clientle.
+                        -->
+                        <xs:attributeGroup ref="bdf_msg:att_montant_devise_grp">
+                        </xs:attributeGroup>
+                     </xs:complexType>
+                  </xs:element>
+                  <!--
+                  Information sur le paiement. Spcifie soit les dtails d'une transaction individuelle, soit une rfrence  un message contenant les dtails devant tre transmis au client bnficiaire.
+                  -->
+                  <xs:element name="remittance_information" maxOccurs="1" minOccurs="0">
+                     <xs:complexType>
+                        <!--
+                        Lignes comportant soit les dtails d'une transaction individuelle, soit une rfrence  un message contenant les dtails devant tre transmis au client bnficiaire.
+                        -->
+                        <xs:group maxOccurs="unbounded" minOccurs="1" ref="bdf_msg:elem_ligne_grp">
+                        </xs:group>
+                     </xs:complexType>
+                  </xs:element>
+                  <!--
+                  Spcifie les frais prlevs par les institutions du ct de l'mission. Chaque lment <charges> se rapporte  une institution.
+                  -->
+                  <xs:element name="charges_info" maxOccurs="1" minOccurs="0">
+                     <xs:complexType>
+                        <xs:sequence maxOccurs="1" minOccurs="1">
+                           <!--
+                           Frais prlevs par une institution participant  l'mission.
+                           -->
+                           <xs:element name="charges" maxOccurs="unbounded" minOccurs="1">
+                              <xs:complexType>
+                                 <!--
+                                 Montant et devise des frais prlevs par une institution participant  l'mission  dans un virement de clientle.
+                                 -->
+                                 <xs:sequence>
+                                    <xs:element name="agent" type="bdf_msg:actor"/>
+                                 </xs:sequence>
+                                 <xs:attributeGroup ref="bdf_msg:att_montant_devise_grp">
+                                 </xs:attributeGroup>
+                              </xs:complexType>
+                           </xs:element>
+                        </xs:sequence>
+                     </xs:complexType>
+                  </xs:element>
+                  <!--
+                  Spcifie les frais dus  l'institution rceptrice.
+                  -->
+                  <!--
+                  Spcifie le ou les codes pour les informations de statut et de rgulation requises par les autorits dans le pays de l'metteur ou du rcepteur.
+                  -->
+                  <xs:element minOccurs="0" name="regulatory_reportings">
+                     <xs:complexType>
+                        <xs:sequence>
+                           <xs:element name="regulatory_reporting" maxOccurs="10" minOccurs="0">
+                              <xs:complexType>
+                                 <!--
+                        Lignes comportant le ou les codes pour les informations de statut et de rgulation requises par les autorits dans le pays de l'metteur ou du rcepteur.
+                        -->
+                                 <xs:sequence>
+                                    <xs:element name="regulatory_details">
+                                       <xs:complexType>
+                                          <xs:sequence minOccurs="0">
+                                             <xs:element maxOccurs="unbounded" minOccurs="0"
+                                                name="p" type="bdf_msg:string_35s"/>
+                                          </xs:sequence>
+                                          <xs:attribute name="type" type="bdf_msg:string_35s"/>
+                                          <xs:attribute name="date" type="xs:date"/>
+                                          <xs:attribute name="country" type="bdf_msg:code_pays"/>
+                                          <xs:attribute name="code" type="bdf_msg:string_10s"/>
+                                          <xs:attribute name="amount" type="bdf_msg:montant"/>
+                                          <xs:attribute name="currency" type="bdf_msg:devise"/>
+                                       </xs:complexType>
+                                    </xs:element>
+                                 </xs:sequence>
+                                 <xs:attribute name="sens" type="bdf_msg:liste_sens_regulatory"/>
+                                 <xs:attribute name="auth_name" type="bdf_msg:string_140s"/>
+                                 <xs:attribute name="auth_country" type="bdf_msg:code_pays"/>
+                              </xs:complexType>
+                           </xs:element>
+                        </xs:sequence>
+                     </xs:complexType>
+                  </xs:element>
+               </xs:sequence>
+               <!--
+               Identifie le type de l'opration
+               -->
+               <xs:attribute name="bank_operation_code" type="bdf_msg:liste_operation_code"
+                  use="required"> </xs:attribute>
+               <!--
+               Nature objet de la transaction individuelle (ex: salaires, dividendes..)
+               -->
+               <xs:attribute name="transaction_type_code" type="bdf_msg:string_alpha3s"
+                  use="optional"> </xs:attribute>
+               <!--
+               Taux de change utilis pour convertir le montant spcifi dans l'lment <amount_instructed>
+               -->
+               <xs:attribute name="exchange_rate" type="bdf_msg:taux_change" use="optional"> </xs:attribute>
+               <!--
+               Spcifie la rpartition des charges entre le client donneur d'ordre et le client bnficiaire.
+               -->
+               <xs:attribute name="detail_charges" type="bdf_msg:liste_attribution_charge"
+                  use="required"> </xs:attribute>
+               <!--
+               Cet indicateur signale si le message swift correspondant est un MT103 en STP.
+               
+               -->
+               <xs:attribute name="stp_flag" type="bdf_msg:booleen" use="optional"> </xs:attribute>
+               <!--
+               Groupe d'attributs spcifiques  l'heure de rglement dans un virement de clientle.
+               -->
+               <xs:attributeGroup ref="bdf_msg:att_time_grp"> </xs:attributeGroup>
+               <!--
+               Groupe d'attributs communs aux flux financiers.
+               Ce groupe comporte notamment la rfrence, le montant, la devise et la date de valeur.
+               -->
+               <xs:attributeGroup ref="bdf_msg:att_flux_com_grp"> </xs:attributeGroup>
+            </xs:complexType>
+         </xs:element>
+      </xs:choice>
+   </xs:group>
+   <xs:group name="batch_messages_grp">
+      <xs:choice>
+         <!--
+         Demande de dmarrage d'un batch sur le GU depuis une application externe via MQSeries avec compte rendu d'excution facultatif.
+         -->
+         <xs:element name="batch_run_request" maxOccurs="1" minOccurs="1">
+            <xs:complexType>
+               <xs:sequence maxOccurs="1" minOccurs="1">
+                  <!--
+                  Valeur d'un paramtre de lancement du batch.
+                  -->
+                  <xs:element name="argument" maxOccurs="unbounded" minOccurs="0">
+                     <xs:complexType>
+                        <xs:simpleContent>
+                           <xs:extension base="xs:string">
+                              <!--
+                             Code du paramtre
+                             -->
+                              <xs:attribute name="code" type="bdf_msg:xs_string_24" use="required">
+                              </xs:attribute>
+                           </xs:extension>
+                        </xs:simpleContent>
+                     </xs:complexType>
+                  </xs:element>
+               </xs:sequence>
+               <!--
+               Identifiant du batch sur le GU.
+               -->
+               <xs:attribute name="batch_type" type="bdf_msg:xs_string_24" use="required"> </xs:attribute>
+               <!--
+               Demande d'un compte-rendu d'excution du batch.
+               -->
+               <xs:attribute name="request_reply" type="bdf_msg:booleen" use="required">
+               </xs:attribute>
+            </xs:complexType>
+         </xs:element>
+         <!--
+         Compte-rendu d'excution d'un batch dmarr sur le GU depuis une application externe via MQSeries.
+         -->
+         <xs:element name="batch_run_reply" maxOccurs="1" minOccurs="1">
+            <xs:complexType>
+               <!--
+               Identifiant du batch sur le GU.
+               -->
+               <xs:attribute name="batch_type" type="bdf_msg:xs_string_24" use="required"> </xs:attribute>
+               <!--
+               Identifiant de la demande d'excution de batch.
+               -->
+               <xs:attribute name="request_msg_id" type="bdf_msg:string_alpha20s" use="required"> </xs:attribute>
+               <!--
+               Rsultat d'excution d'un batch.
+               Y en cas de succs
+               N en cas d'chec
+               -->
+               <xs:attribute name="status" type="bdf_msg:booleen" use="required"> </xs:attribute>
+               <!--
+               Code erreur d'excution d'un batch.
+               -->
+               <xs:attribute name="error_code" type="bdf_msg:string_12s" use="optional"> </xs:attribute>
+               <!--
+               Libell de l'erreur d'excution d'un batch.
+               -->
+               <xs:attribute name="error_reason" type="bdf_msg:xs_string_140" use="optional">
+               </xs:attribute>
+            </xs:complexType>
+         </xs:element>
+      </xs:choice>
+   </xs:group>
+   <xs:simpleType name="bic_swift">
+      <xs:restriction base="xs:string">
+         <xs:pattern value="[A-Z]{6}[A-Z0-9]{2}([A-Z0-9]{3})?"/>
+      </xs:restriction>
+   </xs:simpleType>
+
+   <!--
+   Codes des devises references dans le guichet
+   -->
+   <xs:simpleType name="bic11">
+      <xs:restriction base="bdf_msg:bic_swift">
+         <xs:pattern value="[A-Z]{6}[A-Z0-9]{2}[A-Z0-9]{3}"/>
+         <xs:length value="11"/>
+      </xs:restriction>
+   </xs:simpleType>
+   <xs:simpleType name="booleen">
+      <xs:restriction base="xs:string">
+         <xs:pattern value="[YN]{1}"/>
+      </xs:restriction>
+   </xs:simpleType>
+   <xs:simpleType name="camt">
+      <xs:restriction base="xs:string">
+         <xs:pattern value="\d{3}.\d{3}.\d{2}"/>
+      </xs:restriction>
+   </xs:simpleType>
+   <xs:simpleType name="code_cat_eco">
+      <xs:restriction base="xs:string">
+         <xs:pattern value="[A-Z]{1}[A-Z0-9]{0,4}"/>
+      </xs:restriction>
+   </xs:simpleType>
+   <xs:simpleType name="code_pays">
+      <xs:restriction base="xs:string">
+         <xs:pattern value="[A-Z]{2}"/>
+      </xs:restriction>
+   </xs:simpleType>
+   <xs:complexType name="contact_detail">
+      <xs:simpleContent>
+         <xs:extension base="bdf_msg:string_320s">
+            <xs:attribute name="type" type="bdf_msg:contact_type" use="required"/>
+         </xs:extension>
+      </xs:simpleContent>
+   </xs:complexType>
+   <xs:group name="contact_grp">
+      <xs:sequence>
+         <xs:element minOccurs="0" name="contact">
+            <xs:complexType>
+               <xs:sequence>
+                  <xs:element maxOccurs="unbounded" name="p" type="bdf_msg:contact_detail"/>
+               </xs:sequence>
+            </xs:complexType>
+         </xs:element>
+      </xs:sequence>
+   </xs:group>
+   <xs:simpleType name="contact_type">
+      <xs:restriction base="xs:string">
+         <xs:enumeration value="name"/>
+         <xs:enumeration value="phone"/>
+         <xs:enumeration value="mobile"/>
+         <xs:enumeration value="fax"/>
+         <xs:enumeration value="email"/>
+      </xs:restriction>
+   </xs:simpleType>
+   <xs:simpleType name="devise">
+      <xs:restriction base="xs:string">
+         <xs:pattern value="[A-Z]{3}"/>
+      </xs:restriction>
+   </xs:simpleType>
+
+
+   <!--
+   LEI
+   -->
+   <xs:group name="elem_flux_com_grp">
+      <xs:sequence>
+         <!--
+         Liste des acteurs financiers au dbit ou au crdit d'une opration financire.
+         -->
+         <xs:element name="financial_actors" maxOccurs="2" minOccurs="2">
+            <xs:complexType>
+               <xs:sequence maxOccurs="1" minOccurs="1">
+                  <!--
+                  Spcifie un acteur financier (institution ou client)
+                  -->
+                  <xs:element name="financial_actor" maxOccurs="10" minOccurs="1"
+                     type="bdf_msg:actor"> </xs:element>
+               </xs:sequence>
+               <!--
+               Sens du mouvement du compte des acteurs.
+               -->
+               <xs:attribute name="sens" type="bdf_msg:liste_sens_comptable" use="required">
+               </xs:attribute>
+            </xs:complexType>
+         </xs:element>
+         <!--
+         Informations transmises au rcepteur
+         -->
+         <xs:element name="sender_to_receiver_information" maxOccurs="1" minOccurs="0">
+            <xs:complexType>
+               <!--
+               Lignes comportant les informations communiqus par l'metteur et destines au rcepteur.
+               -->
+               <xs:group maxOccurs="unbounded" minOccurs="1" ref="bdf_msg:elem_ligne_grp">
+               </xs:group>
+            </xs:complexType>
+         </xs:element>
+         <!--
+         Informations additionnelles sur le virement clientle dans un virement bancaire de couverture
+         -->
+         <xs:element name="instruction_codes" maxOccurs="1" minOccurs="0">
+            <xs:complexType>
+               <xs:group ref="bdf_msg:instr_grp"/>
+            </xs:complexType>
+         </xs:element>
+      </xs:sequence>
+   </xs:group>
+   <xs:group name="elem_ligne_grp">
+      <xs:sequence>
+         <!--
+         Ligne de texte libre
+         -->
+         <xs:element name="p" maxOccurs="1" minOccurs="1" type="bdf_msg:ligne"/>
+      </xs:sequence>
+   </xs:group>
+   <xs:simpleType name="horaire">
+      <xs:restriction base="xs:time">
+         <xs:pattern value="[0-9]{2}:[0-9]{2}:[0-9]{2}"/>
+      </xs:restriction>
+   </xs:simpleType>
+   <xs:group name="icm_messages_grp">
+      <xs:choice>
+         <!--
+         Demande de modification du montant de la "credit line" d'un compte RTGS
+         -->
+         <xs:element name="modify_credit_line" maxOccurs="1" minOccurs="1">
+            <xs:complexType>
+               <!--
+               Rfrence du message destine  la SSP.
+               
+               -->
+               <xs:attribute name="reference" type="bdf_msg:string_16s" use="required"> </xs:attribute>
+               <!--
+               Bic Id du propritaire du compte RTGS
+               -->
+               <xs:attribute name="bic_id" type="bdf_msg:bic11" use="required"> </xs:attribute>
+               <!--
+               Montant  porter dans la "credit line" du compte RTGS
+               -->
+               <xs:attribute name="amount_icm" type="bdf_msg:montant_icm" use="required">
+               </xs:attribute>
+            </xs:complexType>
+         </xs:element>
+         <!--
+         Demande du montant de la "credit line" d'un compte RTGS
+         -->
+         <xs:element name="get_credit_line" maxOccurs="1" minOccurs="1">
+            <xs:complexType>
+               <!--
+               Rf??rence du message destine  la SSP.
+               
+               -->
+               <xs:attribute name="reference" type="bdf_msg:string_16s" use="required"> </xs:attribute>
+               <!--
+               Bic Id du propritaire du compte RTGS
+               -->
+               <xs:attribute name="bic_id" type="bdf_msg:bic11" use="required"> </xs:attribute>
+            </xs:complexType>
+         </xs:element>
+         <!--
+         Rponse  la requte get_credit_line
+         -->
+         <xs:element name="return_credit_line" maxOccurs="1" minOccurs="1">
+            <xs:complexType>
+               <xs:choice maxOccurs="1" minOccurs="1">
+                  <!--
+                  Couple BicId du propritaire et montant de la "credit line" d'un compte RTGS.
+                  -->
+                  <xs:element name="credit_line" maxOccurs="1" minOccurs="1">
+                     <xs:complexType>
+                        <!--
+                        Bic Id du propritaire du compte RTGS
+                        -->
+                        <xs:attribute name="bic_id" type="bdf_msg:bic11" use="required"> </xs:attribute>
+                        <!--
+                        Montant  porter dans la "credit line" du compte RTGS
+                        -->
+                        <xs:attribute name="amount_icm" type="bdf_msg:montant_icm" use="required">
+                        </xs:attribute>
+                     </xs:complexType>
+                  </xs:element>
+                  <!--
+                  Spcifie le code et le libell de l'erreur en retour  la requte get_credit_line.
+                  Il s'agit du code et du libell de l'erreur rapporte par un des 2 messages icm receipt ou return_credit_line.
+                  -->
+                  <xs:element name="credit_line_error" maxOccurs="1" minOccurs="1">
+                     <xs:complexType>
+                        <!--
+                        Spcifie le code de l'erreur.
+                        -->
+                        <xs:attribute name="error_code" type="bdf_msg:string_12s" use="required"> </xs:attribute>
+                        <!--
+                        Libell de l'erreur
+                        -->
+                        <xs:attribute name="error_reason" type="bdf_msg:xs_string_140"
+                           use="optional"> </xs:attribute>
+                     </xs:complexType>
+                  </xs:element>
+               </xs:choice>
+               <!--
+               Spcifie si le message d'origine (requte get_credit_line) a t correctement trait.
+               -->
+               <xs:attribute name="status" type="bdf_msg:booleen" use="required"> </xs:attribute>
+               <!--
+               Identifiant du message d'origine (requte get_credit_line).
+               -->
+               <xs:attribute name="original_msg_id" type="bdf_msg:string_alpha20s" use="required"> </xs:attribute>
+               <!--
+               Rfrence SSP du message d'origine (requte get_credit_line)
+               -->
+               <xs:attribute name="original_reference" type="bdf_msg:string_16s" use="required">
+               </xs:attribute>
+            </xs:complexType>
+         </xs:element>
+      </xs:choice>
+   </xs:group>
+   <xs:simpleType name="index_itr">
+      <xs:restriction base="xs:string">
+         <xs:minLength value="1"/>
+         <xs:maxLength value="20"/>
+         <xs:pattern value="\d{1,20}"/>
+      </xs:restriction>
+   </xs:simpleType>
+   <xs:group name="instr_grp">
+      <xs:sequence>
+         <xs:element name="instruction" maxOccurs="unbounded" minOccurs="1">
+            <xs:complexType>
+               <!--
+                                 Code de l'instruction
+                                 -->
+               <xs:sequence minOccurs="0">
+                  <xs:element name="p" type="bdf_msg:string_320s"/>
+               </xs:sequence>
+               <xs:attribute name="code" type="bdf_msg:liste_instruction_code"> </xs:attribute>
+               <!--
+                                 Commentaire suivant le code de l'instruction.
+                                 -->
+            </xs:complexType>
+         </xs:element>
+      </xs:sequence>
+   </xs:group>
+   <xs:simpleType name="lei_ident">
+      <xs:restriction base="xs:string">
+         <xs:pattern value="[A-Z0-9]{18,18}[0-9]{2,2}"/>
+      </xs:restriction>
+   </xs:simpleType>
+
+   <!--
+   Specifie un montant
+   -->
+   <xs:simpleType name="ligne">
+      <xs:restriction base="bdf_msg:string_allowed">
+         <xs:minLength value="1"/>
+         <xs:maxLength value="35"/>
+      </xs:restriction>
+   </xs:simpleType>
+   <xs:simpleType name="liste_attribution_charge">
+      <xs:restriction base="xs:string">
+         <xs:enumeration value="BEN"/>
+         <xs:enumeration value="OUR"/>
+         <xs:enumeration value="SHA"/>
+      </xs:restriction>
+   </xs:simpleType>
+   <xs:simpleType name="liste_auth_code">
+      <xs:restriction base="xs:string">
+         <xs:enumeration value="ARNU"/>
+         <xs:enumeration value="CCPT"/>
+         <xs:enumeration value="CUST"/>
+         <xs:enumeration value="DRLC"/>
+         <xs:enumeration value="EMPL"/>
+         <xs:enumeration value="NIDN"/>
+         <xs:enumeration value="SOSE"/>
+         <xs:enumeration value="TXID"/>
+         <xs:enumeration value="IBEI"/>
+      </xs:restriction>
+   </xs:simpleType>
+   <xs:simpleType name="liste_balance_payments">
+      <xs:annotation>
+         <xs:documentation>C CRP-Complet
+L CRP-Liaison de montant suprieur au seuil dexemption
+P CRP-Complmentaire de montant suprieur au seuil dexemption
+N Prsomption de non dclaration (opration entre deux non-rsidents, opration dordre de rsident et infrieure au seuil dexemption, ou opration non dclarable par nature - par exemple flux de trsorerie interbancaire ).
+R Absence de dclaration en balance des paiements (opration rsident-rsident)
+</xs:documentation>
+      </xs:annotation>
+      <xs:restriction base="xs:string">
+         <xs:enumeration value="C"/>
+         <xs:enumeration value="L"/>
+         <xs:enumeration value="P"/>
+         <xs:enumeration value="N"/>
+         <xs:enumeration value="R"/>
+      </xs:restriction>
+   </xs:simpleType>
+   <xs:simpleType name="liste_code_participation">
+      <xs:annotation>
+         <xs:documentation>D : participant direct
+I : participant indirect
+N : non participant RTGS
+</xs:documentation>
+      </xs:annotation>
+      <xs:restriction base="xs:string">
+         <xs:enumeration value="D"/>
+         <xs:enumeration value="I"/>
+         <xs:enumeration value="N"/>
+      </xs:restriction>
+   </xs:simpleType>
+   <xs:simpleType name="liste_encoding">
+      <xs:restriction base="xs:string">
+         <xs:enumeration value="raw"/>
+         <xs:enumeration value="Base64"/>
+      </xs:restriction>
+   </xs:simpleType>
+   <xs:simpleType name="liste_instruction_code">
+      <xs:restriction base="xs:string">
+         <xs:enumeration value="SDVA"/>
+         <xs:enumeration value="INTC"/>
+         <xs:enumeration value="REPA"/>
+         <xs:enumeration value="CORT"/>
+         <xs:enumeration value="BONL"/>
+         <xs:enumeration value="HOLD"/>
+         <xs:enumeration value="CHQB"/>
+         <xs:enumeration value="PHOB"/>
+         <xs:enumeration value="TELB"/>
+         <xs:enumeration value="PHON"/>
+         <xs:enumeration value="TELE"/>
+         <xs:enumeration value="PHOI"/>
+         <xs:enumeration value="TELI"/>
+      </xs:restriction>
+   </xs:simpleType>
+   <xs:simpleType name="liste_module_request">
+      <xs:restriction base="xs:string">
+         <xs:enumeration value="CLM"/>
+         <xs:enumeration value="RTGS"/>
+         <xs:enumeration value="CRDM"/>
+      </xs:restriction>
+   </xs:simpleType>
+   <xs:simpleType name="liste_operation_code">
+      <xs:restriction base="xs:string">
+         <xs:enumeration value="CRED"/>
+         <xs:enumeration value="SPAY"/>
+         <xs:enumeration value="SPRI"/>
+         <xs:enumeration value="SSTD"/>
+      </xs:restriction>
+   </xs:simpleType>
+   <xs:simpleType name="liste_participation_type_t2dir">
+      <xs:annotation>
+         <xs:documentation>01 Direct
+02 Indirect
+03 Multi-addressee - Credit institutions
+04 Multi addressee - Branch of Direct participant
+05 Addressable BIC - Correspondent
+06 Addressable BIC - Branch of Direct participant
+07 Addressable BIC - Branch of Indirect participant
+08 Addressable BIC - Branch of correspondents</xs:documentation>
+      </xs:annotation>
+      <xs:restriction base="xs:string">
+         <xs:enumeration value="01"/>
+         <xs:enumeration value="02"/>
+         <xs:enumeration value="03"/>
+         <xs:enumeration value="04"/>
+         <xs:enumeration value="05"/>
+         <xs:enumeration value="06"/>
+         <xs:enumeration value="07"/>
+         <xs:enumeration value="08"/>
+      </xs:restriction>
+   </xs:simpleType>
+   <xs:simpleType name="liste_priorite">
+      <xs:annotation>
+         <xs:documentation>H : hautement urgent
+U : urgent
+N : normal ; valeur par defaut
+</xs:documentation>
+      </xs:annotation>
+      <xs:restriction base="xs:string">
+         <xs:enumeration value="H"/>
+         <xs:enumeration value="U"/>
+         <xs:enumeration value="N"/>
+      </xs:restriction>
+   </xs:simpleType>
+   <xs:simpleType name="liste_role_acteur">
+      <xs:annotation>
+         <xs:documentation>ssp_participant : participant ssp
+head : institution ou client source ou destinataire
+head_account_holder : gestionnaire de l'institution ou du client source ou destinataire
+correspondent : correspondant du participant ssp . Son compte est gr par le participant ssp.
+intermediary : gestionnaire du compte de l'acteur "head_account_holder"
+intermediary2 : gestionnaire du compte de l'acteur "intermediary"
+</xs:documentation>
+      </xs:annotation>
+      <xs:restriction base="xs:string">
+         <xs:enumeration value="ssp_participant"/>
+         <xs:enumeration value="correspondent"/>
+         <xs:enumeration value="intermediary2"/>
+         <xs:enumeration value="intermediary"/>
+         <xs:enumeration value="head_account_holder"/>
+         <xs:enumeration value="head"/>
+         <xs:enumeration value="intermediary3"/>
+         <xs:enumeration value="prev_instructing1"/>
+         <xs:enumeration value="prev_instructing2"/>
+         <xs:enumeration value="prev_instructing3"/>
+         <xs:enumeration value="init"/>
+         <xs:enumeration value="ultimate"/>
+      </xs:restriction>
+   </xs:simpleType>
+   <xs:simpleType name="liste_sens_comptable">
+      <xs:restriction base="xs:string">
+         <xs:enumeration value="C"/>
+         <xs:enumeration value="D"/>
+      </xs:restriction>
+   </xs:simpleType>
+   <xs:simpleType name="liste_sens_regulatory">
+      <xs:restriction base="xs:string">
+         <xs:enumeration value="CRED"/>
+         <xs:enumeration value="DEBT"/>
+         <xs:enumeration value="BOTH"/>
+      </xs:restriction>
+   </xs:simpleType>
+   <xs:simpleType name="liste_statut_participant_detail">
+      <xs:annotation>
+         <xs:documentation>A : Actif
+F : Futur
+O : Obsolte
+V : A valider</xs:documentation>
+      </xs:annotation>
+      <xs:restriction base="xs:string">
+         <xs:enumeration value="A"/>
+         <xs:enumeration value="F"/>
+         <xs:enumeration value="O"/>
+         <xs:enumeration value="V"/>
+      </xs:restriction>
+   </xs:simpleType>
+   <xs:simpleType name="liste_type_participant">
+      <xs:annotation>
+         <xs:documentation>CI :  institution de crdit
+CB : banque centrale
+CU : client d'une banque centrale
+TC : technique</xs:documentation>
+      </xs:annotation>
+      <xs:restriction base="xs:string">
+         <xs:enumeration value="CI"/>
+         <xs:enumeration value="CB"/>
+         <xs:enumeration value="CU"/>
+         <xs:enumeration value="TC"/>
+      </xs:restriction>
+   </xs:simpleType>
+   <xs:simpleType name="liste_zone_residence">
+      <xs:annotation>
+         <xs:documentation>0 : Inutile
+R : Resident FR
+U : Non Resident / Zone Euro
+N :Non resident / UE / Non Euro
+H : Non Resident / Non UE
+</xs:documentation>
+      </xs:annotation>
+      <xs:restriction base="xs:string">
+         <xs:enumeration value="0"/>
+         <xs:enumeration value="R"/>
+         <xs:enumeration value="U"/>
+         <xs:enumeration value="N"/>
+         <xs:enumeration value="H"/>
+      </xs:restriction>
+   </xs:simpleType>
+   <xs:complexType name="masses_debit_credit">
+      <xs:sequence maxOccurs="1" minOccurs="1">
+         <!--
+         Soldes et sens comptables en dbut et fin de journe
+         -->
+         <xs:element name="soldes_journee" maxOccurs="1" minOccurs="1" type="bdf_msg:soldes_journee"
+         />
+      </xs:sequence>
+      <!--
+      Cumuls de dbits pour un compte et une journe
+      -->
+      <xs:attribute name="masse_debits_du_jour" type="bdf_msg:montant" use="required"> </xs:attribute>
+      <!--
+      Cumuls de crdits pour un compte et une journe
+      -->
+      <xs:attribute name="masse_credits_du_jour" type="bdf_msg:montant" use="required"> </xs:attribute>
+      <!--
+      Groupe d'attributs reprsentant les informations sur le numro de compte et le critre catco+ZR+R/O, dans le cadre des messages destins  la DCG
+      -->
+      <xs:attributeGroup ref="bdf_msg:att_compte_grp"> </xs:attributeGroup>
+   </xs:complexType>
+   <xs:simpleType name="montant">
+      <xs:restriction base="xs:string">
+         <xs:minLength value="2"/>
+         <xs:maxLength value="18"/>
+         <xs:pattern value="\d{1,17},\d{0,3}"/>
+      </xs:restriction>
+   </xs:simpleType>
+   <xs:simpleType name="montant_icm">
+      <xs:restriction base="xs:string">
+         <xs:minLength value="1"/>
+         <xs:maxLength value="18"/>
+         <xs:pattern value="\d{1,18}[,]{0,1}\d{0,2}"/>
+      </xs:restriction>
+   </xs:simpleType>
+   <xs:simpleType name="nb_details">
+      <xs:restriction base="xs:string">
+         <xs:minLength value="1"/>
+         <xs:maxLength value="4"/>
+         <xs:pattern value="\d{1,4}"/>
+      </xs:restriction>
+   </xs:simpleType>
+   <xs:simpleType name="nombre_3n">
+      <xs:restriction base="xs:string">
+         <xs:pattern value="[0-9]{1,3}"/>
+      </xs:restriction>
+   </xs:simpleType>
+   <xs:simpleType name="nombre_3n_fixe">
+      <xs:restriction base="xs:string">
+         <xs:pattern value="[0-9]{3}"/>
+      </xs:restriction>
+   </xs:simpleType>
+   <xs:simpleType name="nombre_4n">
+      <xs:restriction base="xs:string">
+         <xs:pattern value="[0-9]{1,4}"/>
+      </xs:restriction>
+   </xs:simpleType>
+   <xs:simpleType name="nombre_5n_fixe">
+      <xs:restriction base="xs:string">
+         <xs:pattern value="[0-9]{5}"/>
+      </xs:restriction>
+   </xs:simpleType>
+   <xs:simpleType name="nombre_9n_fixe">
+      <xs:restriction base="xs:string">
+         <xs:pattern value="[0-9]{9}"/>
+      </xs:restriction>
+   </xs:simpleType>
+   <xs:simpleType name="nombre_10n_fixe">
+      <xs:restriction base="xs:string">
+         <xs:pattern value="[0-9]{10}"/>
+      </xs:restriction>
+   </xs:simpleType>
+   <xs:simpleType name="nombre_12n">
+      <xs:restriction base="xs:string">
+         <xs:pattern value="[0-9]{1,12}"/>
+      </xs:restriction>
+   </xs:simpleType>
+   <xs:simpleType name="num_version">
+      <xs:restriction base="xs:string">
+         <xs:pattern value="[0-9]{2}.[0-9]{2}"/>
+      </xs:restriction>
+   </xs:simpleType>
+
+   <xs:simpleType name="rank_type">
+      <xs:restriction base="xs:unsignedInt"> </xs:restriction>
+   </xs:simpleType>
+   <xs:group name="sag_messages_grp">
+      <xs:choice>
+         <!--
+         Demande de transfert d'un fichier (FILEACT) situ sur la machine SAG.
+         -->
+         <xs:element name="sag_fileact_request" maxOccurs="1" minOccurs="1">
+            <xs:complexType>
+               <xs:sequence maxOccurs="1" minOccurs="1">
+                  <!--
+                  Nom logique du fichier
+                 
+                  -->
+                  <xs:element name="file_name" maxOccurs="1" minOccurs="1"
+                     type="bdf_msg:string_file"/>
+               </xs:sequence>
+               <!--
+               Nom du service SwiftNet
+               -->
+               <xs:attribute name="service" type="bdf_msg:service_swiftnet" use="required">
+               </xs:attribute>
+            </xs:complexType>
+         </xs:element>
+         <!--
+         En mode "Real Time" il s'agit de la rponse  la demande de transfert de fichier FileAct situ sur la machine SAG.
+         En mode "Store and Forward" il s'agit d'un fichier envoy  l'initiative de la SSP.
+         -->
+         <xs:element name="sag_fileact_reply" maxOccurs="1" minOccurs="1">
+            <xs:complexType>
+               <xs:sequence maxOccurs="1" minOccurs="1">
+                  <!--
+                  Nom logique du fichier
+                  -->
+                  <xs:element name="file_name" maxOccurs="1" minOccurs="1"
+                     type="bdf_msg:string_file"/>
+                  <xs:choice maxOccurs="1" minOccurs="1">
+                     <!--
+                     Contenu de la partie du fichier.
+                     -->
+                     <xs:element name="file_data" maxOccurs="1" minOccurs="1">
+                        <xs:complexType>
+                           <xs:simpleContent>
+                              <xs:extension base="xs:string">
+                                 <!--
+                                Nombre de parties du fichier
+                                -->
+                                 <xs:attribute name="nb_part" type="bdf_msg:nombre_3n"
+                                    use="required"> </xs:attribute>
+                                 <!--
+                                Numro de partie du fichier.
+                                -->
+                                 <xs:attribute name="part_id" type="bdf_msg:nombre_3n"
+                                    use="required"> </xs:attribute>
+                                 <!--
+                                L'attribut encoding indique le type d'encodage utilis par SNC pour encoder les donnes transmises dans le "file_data" du present message. Dans le cas d'un fichier transmis en plusieures parties (nb_part > 1), chacune des parties peut avoir un encodage diffrent.
+                                L'encoding raw indique que SNC n'a pas modifi les donnes reues, elles sont transmises  l'identique. Ce mode est utilis dans le cas ou les donnes sont compatibles avec une intgration dans un flux XML (ex: texte).
+                                L'encoding Base64 indique que SNC a encod les donnes en base64 avant le les transmettre. Ce mode est utilis dans le cas ou les donnes sont incompatibles avec une intgration dans un flux XML (ex: binaire).
+                                -->
+                                 <xs:attribute name="encoding" type="bdf_msg:liste_encoding"
+                                    use="required"> </xs:attribute>
+                                 <!--
+                                Type de compression du fichier appliqu par la SSP.
+                                Extrait de la valeur de l'lment Sw:FileInfo dans l'en-tte SwiftNet du message envoye par la SSP. Il s'agit de la partie situe derrire la chaine "SwCompression="
+                                -->
+                                 <xs:attribute name="compression" type="xs:string" use="optional"> </xs:attribute>
+                                 <xs:anyAttribute/>
+                              </xs:extension>
+                           </xs:simpleContent>
+                        </xs:complexType>
+                     </xs:element>
+                     <!--
+                     Code et libell de l'erreur
+                     -->
+                     <xs:element name="error" maxOccurs="1" minOccurs="1">
+                        <xs:complexType>
+                           <!--
+                           Spcifie le code du rejet.
+                           KOSNC
+                           KOSAG
+                           KOSWIFT
+                           FILENOTFOUND
+                           ...
+                           Le code KOSNC est particulier; il avise que l'envoi en cours est annul et que le SNC recommencera un nouvel envoi du fichier en totalit avec un nouveau numro de squence incrment.
+                           -->
+                           <xs:attribute name="error_code" type="bdf_msg:string_12s" use="required"> </xs:attribute>
+                           <!--
+                           Libell du rejet
+                           -->
+                           <xs:attribute name="error_reason" type="bdf_msg:xs_string_140"
+                              use="optional"> </xs:attribute>
+                        </xs:complexType>
+                     </xs:element>
+                  </xs:choice>
+               </xs:sequence>
+               <!--
+               Identifiant du message de demande de transfert de fichier FILEACT.
+               -->
+               <xs:attribute name="request_msg_id" type="bdf_msg:string_alpha20s" use="optional"> </xs:attribute>
+               <!--
+               Statut du rsultat de la demande de transfert de fichier FilaeAct. Il conditionne le contenu du message.
+               Si le statut = "Y" alors le message comporte un lment file_data et ne comporte pas de code ni de libell d'erreur.
+               Si le statut = "N" alors le message comporte un code erreur et ne comporte pas d'lment file_data.
+               -->
+               <xs:attribute name="status" type="bdf_msg:booleen" use="required"> </xs:attribute>
+               <!--
+               Numro de squence d'envoi d'un fichier par le SNC.
+               Si lors de l'envoi d'un fichier,  le SNC rencontre une erreur technique non finale, il informe le Gu qu'il interromp l'envoi en mettant un message avec le code erreur KOSNC. Ce message avise le Gu que les messages fileact pour la squence en cours ne doivent pas tre traits.
+               Le SNC reprend ensuite l'envoi du fichier dans sa totalit aprs avoir incrment le numro de squence.
+               -->
+               <xs:attribute name="sequence" type="bdf_msg:nombre_12n" use="required"> </xs:attribute>
+               <!--
+               Extrait de la rfrence du transfert au niveau SNL.
+               Cet identifiant permet de diffrencier et d'ordonner chronologiquement des fichiers qui portent le mme nom.
+               Il s'agit de l'heure systme exprime en secondes.
+               -->
+               <xs:attribute name="snl_transfer_id" type="bdf_msg:nombre_10n_fixe" use="optional">
+               </xs:attribute>
+            </xs:complexType>
+         </xs:element>
+         <!--
+         Requte interact
+         
+         -->
+         <xs:element name="sag_interact_request" maxOccurs="1" minOccurs="1">
+            <xs:complexType>
+               <xs:sequence maxOccurs="1" minOccurs="1">
+                  <!--
+                  Message ICM : application header et document
+                  -->
+                  <xs:element name="payload" maxOccurs="1" minOccurs="1" type="xs:string"/>
+               </xs:sequence>
+               <!--
+               Nom du service SwiftNet
+               -->
+               <xs:attribute name="service" type="bdf_msg:service_swiftnet" use="required"> </xs:attribute>
+               <!--
+               Type de la requte pour SwiftNet.
+               Il s'agit de l'identifiant "camt" figurant au dbut de la partie Document dans le Payload.
+               -->
+               <xs:attribute name="request_type" type="bdf_msg:string_30s" use="required"> </xs:attribute>
+               <!--
+               Demande de signature swiftNet
+               La signature swiftNet est obligatoire pour une requte ICM assujettie  la rgle de Non rpudiation par l'metteur.
+               -->
+               <xs:attribute name="signature" type="bdf_msg:booleen" use="required"> </xs:attribute>
+               <!--
+               Module de la SSP  qui est destine la requte.
+               -->
+               <xs:attribute name="module" type="bdf_msg:liste_module_request" use="required">
+               </xs:attribute>
+            </xs:complexType>
+         </xs:element>
+         <!--
+         Rponse interact
+         -->
+         <xs:element name="sag_interact_reply" maxOccurs="1" minOccurs="1">
+            <xs:complexType>
+               <xs:choice maxOccurs="1" minOccurs="1">
+                  <!--
+                  Message ICM : application header et document
+                  -->
+                  <xs:element name="payload" maxOccurs="1" minOccurs="1">
+                     <xs:complexType>
+                        <xs:simpleContent>
+                           <xs:extension base="xs:string">
+                              <!--
+                             Indicateur de compression et d'encodage en base 64 de la rponse ICM par la SSP
+                             Il s'agit de la valeur de l'attribut dt de l'lment SwInt:ResponsePayload du message ICM envoye par la SSP.
+                             -->
+                              <xs:attribute name="payload_dt" type="xs:string" use="optional">
+                              </xs:attribute>
+                           </xs:extension>
+                        </xs:simpleContent>
+                     </xs:complexType>
+                  </xs:element>
+                  <!--
+                  Code et libell de l'erreur
+                  -->
+                  <xs:element name="error" maxOccurs="1" minOccurs="1">
+                     <xs:complexType>
+                        <!--
+                        Spcifie le code du rejet.
+                        KOSAG
+                        KOSWIFT
+                        Il n'y a pas de code KOSNC.
+                        Le rejet par le SNC est signifi par un avis de rejet (message_advice avec erreur).
+                        -->
+                        <xs:attribute name="error_code" type="bdf_msg:string_12s" use="required"> </xs:attribute>
+                        <!--
+                        Libell du rejet
+                        -->
+                        <xs:attribute name="error_reason" type="bdf_msg:xs_string_140"
+                           use="optional"> </xs:attribute>
+                     </xs:complexType>
+                  </xs:element>
+               </xs:choice>
+               <!--
+               Identifiant du message de requte interAct.
+               -->
+               <xs:attribute name="request_msg_id" type="bdf_msg:string_alpha20s"> </xs:attribute>
+               <!--
+               Statut du rsultat de la requte InterAct. Il conditionne le contenu du message.
+               Si le statut = "Y" alors le message comporte une rponse ICM (payload) et ne comporte pas de code ni de libell d'erreur.
+               Si le statut = "N" alors le message comporte un code erreur et ne comporte pas de rponse ICM.
+               -->
+               <xs:attribute name="status" type="bdf_msg:booleen"> </xs:attribute>
+            </xs:complexType>
+         </xs:element>
+         <!--
+         Message SwiftNet mis ou reu par SNC.
+         Les requtes interAct pour lesquelles il est demand une signature SwiftNet engagent SNC  transmettre au Gu
+         - le message de requte au format SwiftNet sign et mis vers la SAG ; l'attribut sag_msg_id est alors renseign avec le msg_id du message sag_interact_request
+         - le message de rponse au format SwiftNet reu de la SAG ;   l'attribut sag_msg_id est alors renseign avec le msg_id du message sag_interact_reply
+         -->
+         <xs:element name="sag_backup_msg" maxOccurs="1" minOccurs="1">
+            <xs:complexType>
+               <xs:simpleContent>
+                  <xs:extension base="xs:string">
+                     <!--
+                    Identifiant d'un message de requte reu par SNC ou de rponse mis par SNC auquel le message SwiftNet est rattach.
+                    Dans le cas d'un message SwiftNet construit  partir d'une requte alors il s'agit de l'identifiant de la requte reue par SNC (attribut msg_id du msg_header rattach  sag_interact_request).
+                    Dans le cas d'un message SwiftNet reu de la SAG en rponse  une requte alors il s'agit de l'identifiant de la rponse construite par SNC (attribut msg_id du msg_header rattach  sag_interact_reply).
+                    -->
+                     <xs:attribute name="sag_msg_id" type="bdf_msg:string_alpha20s" use="required">
+                     </xs:attribute>
+                  </xs:extension>
+               </xs:simpleContent>
+            </xs:complexType>
+         </xs:element>
+      </xs:choice>
+   </xs:group>
+   <xs:simpleType name="service_swiftnet">
+      <xs:restriction base="bdf_msg:us_ascii">
+         <xs:minLength value="1"/>
+         <xs:maxLength value="30"/>
+      </xs:restriction>
+   </xs:simpleType>
+   <xs:complexType name="solde">
+      <xs:attribute name="sens" type="bdf_msg:liste_sens_comptable" use="required"> </xs:attribute>
+      <xs:attribute name="montant" type="bdf_msg:montant" use="required"> </xs:attribute>
+   </xs:complexType>
+   <xs:complexType name="soldes_journee">
+      <xs:sequence maxOccurs="1" minOccurs="1">
+         <!--
+         Solde et sens comptable en dbut de journe.
+         -->
+         <xs:element name="solde_debut_journee" maxOccurs="1" minOccurs="1" type="bdf_msg:solde"/>
+         <!--
+         Solde et sens comptable en fin de journe.
+         -->
+         <xs:element name="solde_fin_journee" maxOccurs="1" minOccurs="1" type="bdf_msg:solde"/>
+      </xs:sequence>
+   </xs:complexType>
+   <xs:group name="static_data_messages_grp">
+      <xs:sequence>
+         <!--
+         Rfrentiel du guichet transmis aux BO.
+         -->
+         <xs:element name="static_data" maxOccurs="1" minOccurs="1">
+            <xs:annotation>
+               <xs:documentation>Message Rfrentiel GU->BO</xs:documentation>
+            </xs:annotation>
+            <xs:complexType>
+               <xs:sequence maxOccurs="1" minOccurs="1">
+                  <!--
+                  Informations sur un participant SSP
+                  -->
+                  <xs:element name="participant_detail" maxOccurs="unbounded" minOccurs="1">
+                     <xs:complexType>
+                        <xs:sequence maxOccurs="1" minOccurs="1">
+                           <!--
+                           Numro d'un sous-compte RTGS utilis pour le rglement de nuit d'un SE interfac.
+                           -->
+                           <xs:element name="sub_account" maxOccurs="unbounded" minOccurs="0">
+                              <xs:complexType>
+                                 <xs:attribute name="sub_account_number" type="bdf_msg:account_ssp"
+                                    use="optional"> </xs:attribute>
+                                 <xs:attribute name="name_of_dedicated_as"
+                                    type="bdf_msg:xs_string_35" use="optional"> </xs:attribute>
+                              </xs:complexType>
+                           </xs:element>
+                        </xs:sequence>
+                        <!--
+                        Bic identifiant d'un participant SSP
+                        -->
+                        <xs:attribute name="bic_id" type="bdf_msg:bic11" use="required"> </xs:attribute>
+                        <!--
+                        Nom de l'institution
+                        -->
+                        <xs:attribute name="participant_name" type="bdf_msg:xs_string_105"
+                           use="optional"> </xs:attribute>
+                        <!--
+                        Adresse du BIC
+                        -->
+                        <xs:attribute name="address" type="bdf_msg:xs_string_140" use="optional"> </xs:attribute>
+                        <!--
+                        Code postal du BIC
+                        -->
+                        <xs:attribute name="zip_code" type="bdf_msg:xs_string_15" use="optional"> </xs:attribute>
+                        <!--
+                        Nom de la ville o est localis le participant.
+                        -->
+                        <xs:attribute name="city_heading" type="bdf_msg:xs_string_35" use="optional"
+                           > </xs:attribute>
+                        <!--
+                        Boolen signalant si le BIC SSP est publi dans le T2Dir : Y or N
+                        -->
+                        <xs:attribute name="published_in_t2dir" type="bdf_msg:booleen"
+                           use="optional"> </xs:attribute>
+                        <!--
+                        Code tablissement pour la France.
+                        -->
+                        <xs:attribute name="national_sorting_code" type="bdf_msg:xs_string_15"
+                           use="optional"> </xs:attribute>
+                        <!--
+                        Code pays de la banque centrale responsable.
+                        -->
+                        <xs:attribute name="country_code" type="bdf_msg:code_pays" use="optional"> </xs:attribute>
+                        <!--
+                        Type du participant.
+                        -->
+                        <xs:attribute name="type_participant" type="bdf_msg:liste_type_participant"
+                           use="optional"> </xs:attribute>
+                        <!--
+                        Type renseign dans le T2Dir : valeurs possibles : 01, 02, 03, 04, 05, 06, 07, 08
+                        -->
+                        <xs:attribute name="participation_type_t2dir"
+                           type="bdf_msg:liste_participation_type_t2dir" use="optional"> </xs:attribute>
+                        <!--
+                        Code catgorie conomique  (information BdF)
+                        -->
+                        <xs:attribute name="categorie_economique" type="bdf_msg:code_cat_eco"
+                           use="optional"> </xs:attribute>
+                        <!--
+                        Nature de la participation RTGS.
+                        -->
+                        <xs:attribute name="rtgs_participation"
+                           type="bdf_msg:liste_code_participation" use="optional"> </xs:attribute>
+                        <!--
+                        Tmoin de l'exclusion d'un participant.
+                        Si une exclusion intervient en cours de journe, aucune information n'est transmise aux BO.
+                        -->
+                        <xs:attribute name="exclusion" type="bdf_msg:booleen" use="optional"> </xs:attribute>
+                        <!--
+                        Bic d'adressage dsignant l'adresse du participant vers o les messages swift qui lui sont destins, doivent tre envoys.
+                        -->
+                        <xs:attribute name="bic_addressee" type="bdf_msg:bic11" use="optional"> </xs:attribute>
+                        <!--
+                        Bic du propritaire de compte RTGS (PM)
+                        -->
+                        <xs:attribute name="bic_account_holder" type="bdf_msg:bic11" use="optional"> </xs:attribute>
+                        <!--
+                        Tmoin de bic par dfaut pour une entit.
+                        Si une entit a plusieurs bic_id dclars avec la mme racine bic8, elle indique quel est le bic_id principal qui doit tre utilis si la contrepartie ne sait pas quel bic_id utiliser.
+                        -->
+                        <xs:attribute name="main_bic_flag" type="bdf_msg:booleen" use="optional"> </xs:attribute>
+                        <!--
+                        Zone de rsidence (information BdF)
+                        valeurs possibles : O, R, U, N, H
+                        -->
+                        <xs:attribute name="zone_residence" type="bdf_msg:liste_zone_residence"
+                           use="optional"> </xs:attribute>
+                        <!--
+                        Numro de siren (information BdF)
+                        -->
+                        <xs:attribute name="siren_number" type="bdf_msg:nombre_9n_fixe"
+                           use="optional"> </xs:attribute>
+                        <!--
+                        Dsigne si le participant est soumis  rserves obligatoires (RO).
+                        -->
+                        <xs:attribute name="submitted_ro" type="bdf_msg:booleen" use="optional"> </xs:attribute>
+                        <!--
+                        Numro de compte RTGS (PM) sur lequel sont impact??es les oprations (sur le PM) du participant.
+                        Vide s'il ne s'agit pas d'un participant RTGS (attribut rtgs_participation="N").
+                        -->
+                        <xs:attribute name="rtgs_account" type="bdf_msg:account_ssp" use="optional"> </xs:attribute>
+                        <!--
+                        Nombre de sous-comptes RTGS.
+                        Un participant peut avoir besoin de sous-comptes RTGS, dans le cadre de rglement de nuit de systmes exognes dits interfacs.
+                        Chaque participant a 1 sous-compte par SE ; et est exclusif pour 1 SE (1 sous-compte ne peut pas tre utilis pour 2 SE).
+                       
+                        -->
+                        <xs:attribute name="nb_sub_accounts" type="bdf_msg:nombre_3n" use="optional"
+                           > </xs:attribute>
+                        <!--
+                        Spcifie si un participant titulaire d'un compte HAM est "reprsent BDF"
+                         (information BdF)
+                        -->
+                        <xs:attribute name="represented_bdf" type="bdf_msg:booleen" use="optional"> </xs:attribute>
+                        <!--
+                        Numro de compte HAM du participant.
+                        Un participant a au plus un numro de compte HAM.
+                        -->
+                        <xs:attribute name="ham_account" type="bdf_msg:account_ssp" use="optional"> </xs:attribute>
+                        <!--
+                        Compte CM
+                        -->
+                        <xs:attribute name="cm_account" type="bdf_msg:account_ssp" use="optional"> </xs:attribute>
+                        <!--
+                        Indique si le participant peut effectuer des oprations dans le SFM ou non (oprations de prt marginal et/ou facilit de dpt).
+                        -->
+                        <xs:attribute name="sf_allow" type="bdf_msg:booleen" use="optional"> </xs:attribute>
+                        <!--
+                        Numro du compte SF OD (OD : Overnight Deposit (facilit de dpt)).
+                        -->
+                        <xs:attribute name="sf_account_od" type="bdf_msg:account_ssp" use="optional"
+                           > </xs:attribute>
+                        <!--
+                        Numro du compte SF ML (ML : Marginal Lending (prt marginal)).
+                        -->
+                        <xs:attribute name="sf_account_ml" type="bdf_msg:account_ssp" use="optional"
+                           > </xs:attribute>
+                        <!--
+                        Statut appliqu aux donnes relatives au participant.
+                        -->
+                        <xs:attribute name="detail_statut"
+                           type="bdf_msg:liste_statut_participant_detail" use="required"> </xs:attribute>
+                        <!--
+                        Date de dbut de validit des donnes du participant SSP.
+                        -->
+                        <xs:attribute name="valid_from" type="xs:date" use="required"> </xs:attribute>
+                        <!--
+                        Date de fin de validit des donnes du participant SSP.
+                        -->
+                        <xs:attribute name="valid_till" type="xs:date" use="required"> </xs:attribute>
+                        <xs:attribute name="negative_rates" type="bdf_msg:booleen" use="optional">
+                        </xs:attribute>
+                     </xs:complexType>
+                  </xs:element>
+               </xs:sequence>
+            </xs:complexType>
+         </xs:element>
+      </xs:sequence>
+   </xs:group>
+   <xs:simpleType name="string_allowed">
+      <xs:restriction base="xs:string">
+         <xs:pattern value="[a-zA-Z0-9 /\-\?:\(\)\.,'\+\{\}]{0,200}"/>
+      </xs:restriction>
+   </xs:simpleType>
+   <!--
+   Chane limite   34 caractres
+   -->
+   <xs:simpleType name="string_alpha">
+      <xs:restriction base="xs:string">
+         <xs:pattern value="[A-Z0-9]{0,100}"/>
+      </xs:restriction>
+   </xs:simpleType>
+   <xs:simpleType name="string_alpha3s">
+      <xs:restriction base="bdf_msg:string_alpha">
+         <xs:minLength value="1"/>
+         <xs:maxLength value="3"/>
+      </xs:restriction>
+   </xs:simpleType>
+   <xs:simpleType name="string_alpha20s">
+      <xs:restriction base="bdf_msg:string_alpha">
+         <xs:minLength value="1"/>
+         <xs:maxLength value="20"/>
+      </xs:restriction>
+   </xs:simpleType>
+   <xs:simpleType name="string_cateco_ZR_RO">
+      <xs:restriction base="xs:string">
+         <xs:pattern value="[A-Z0-9 ]{7}"/>
+      </xs:restriction>
+   </xs:simpleType>
+   <xs:simpleType name="string_file">
+      <xs:restriction base="bdf_msg:us_ascii">
+         <xs:minLength value="1"/>
+         <xs:maxLength value="35"/>
+      </xs:restriction>
+   </xs:simpleType>
+   <xs:simpleType name="string_10s">
+      <xs:restriction base="bdf_msg:string_allowed">
+         <xs:minLength value="1"/>
+         <xs:maxLength value="10"/>
+      </xs:restriction>
+   </xs:simpleType>
+   <xs:simpleType name="string_12s">
+      <xs:restriction base="bdf_msg:string_allowed">
+         <xs:minLength value="1"/>
+         <xs:maxLength value="12"/>
+      </xs:restriction>
+   </xs:simpleType>
+   <xs:simpleType name="string_16s">
+      <xs:restriction base="bdf_msg:string_allowed">
+         <xs:minLength value="1"/>
+         <xs:maxLength value="16"/>
+      </xs:restriction>
+   </xs:simpleType>
+   <xs:simpleType name="string_30s">
+      <xs:restriction base="bdf_msg:string_allowed">
+         <xs:minLength value="1"/>
+         <xs:maxLength value="30"/>
+      </xs:restriction>
+   </xs:simpleType>
+   <xs:simpleType name="string_34s">
+      <xs:restriction base="bdf_msg:string_allowed">
+         <xs:minLength value="1"/>
+         <xs:maxLength value="34"/>
+      </xs:restriction>
+   </xs:simpleType>
+
+   <xs:simpleType name="string_35s">
+      <xs:restriction base="bdf_msg:string_allowed">
+         <xs:minLength value="1"/>
+         <xs:maxLength value="35"/>
+      </xs:restriction>
+   </xs:simpleType>
+   <xs:simpleType name="string_36s">
+      <xs:restriction base="xs:string">
+         <xs:pattern value="[a-zA-Z0-9 /\-\?:\(\)\.,'\+\{\}]{36}"/>
+      </xs:restriction>
+   </xs:simpleType>
+
+   <xs:simpleType name="string_105s">
+      <xs:restriction base="bdf_msg:string_allowed">
+         <xs:minLength value="1"/>
+         <xs:maxLength value="105"/>
+      </xs:restriction>
+   </xs:simpleType>
+   <xs:simpleType name="string_alpha16s">
+      <xs:restriction base="bdf_msg:string_alpha">
+         <xs:minLength value="1"/>
+         <xs:maxLength value="16"/>
+      </xs:restriction>
+   </xs:simpleType>
+   <xs:simpleType name="string_33s">
+      <xs:restriction base="bdf_msg:string_allowed">
+         <xs:minLength value="1"/>
+         <xs:maxLength value="33"/>
+      </xs:restriction>
+   </xs:simpleType>
+   <xs:simpleType name="string_15s">
+      <xs:restriction base="bdf_msg:string_allowed">
+         <xs:minLength value="1"/>
+         <xs:maxLength value="15"/>
+      </xs:restriction>
+   </xs:simpleType>
+   <xs:simpleType name="string_140s">
+      <xs:restriction base="bdf_msg:string_allowed">
+         <xs:minLength value="1"/>
+         <xs:maxLength value="140"/>
+      </xs:restriction>
+   </xs:simpleType>
+   <xs:simpleType name="string_70s">
+      <xs:restriction base="bdf_msg:string_allowed">
+         <xs:minLength value="1"/>
+         <xs:maxLength value="70"/>
+      </xs:restriction>
+   </xs:simpleType>
+   <xs:simpleType name="string_320s">
+      <xs:restriction base="xs:string">
+         <xs:minLength value="1"/>
+         <xs:maxLength value="320"/>
+      </xs:restriction>
+   </xs:simpleType>
+   <xs:simpleType name="taux_change">
+      <xs:restriction base="xs:string">
+         <xs:pattern value="\d{1,11},\d{0,10}"/>
+         <xs:minLength value="2"/>
+         <xs:maxLength value="12"/>
+      </xs:restriction>
+   </xs:simpleType>
+
+   <xs:simpleType name="us_ascii">
+      <xs:restriction base="xs:string">
+         <xs:pattern
+            value="[!&quot;#$%&amp;'\(\)\*\+,-\./0-9:;&lt;=>\?@A-Z\[\\\]\^_`a-z\{\|\}~]{0,200}"/>
+      </xs:restriction>
+   </xs:simpleType>
+   <xs:simpleType name="xs_string_24">
+      <xs:restriction base="xs:string">
+         <xs:minLength value="1"/>
+         <xs:maxLength value="24"/>
+      </xs:restriction>
+   </xs:simpleType>
+   <!--
+   Messages changs avec la SAG :
+   - demande de transfert de fichier FileAct
+   - transfert de fichier FileAct
+   - requte InterAct
+   - rponse InterAct
+   - backup des messages changs entre SNC et la SAG
+   -->
+   <xs:simpleType name="xs_string_35">
+      <xs:restriction base="xs:string">
+         <xs:minLength value="1"/>
+         <xs:maxLength value="35"/>
+      </xs:restriction>
+   </xs:simpleType>
+   <xs:simpleType name="xs_string_15">
+      <xs:restriction base="xs:string">
+         <xs:minLength value="1"/>
+         <xs:maxLength value="15"/>
+      </xs:restriction>
+   </xs:simpleType>
+   <xs:simpleType name="xs_string_100">
+      <xs:restriction base="xs:string">
+         <xs:minLength value="1"/>
+         <xs:maxLength value="100"/>
+      </xs:restriction>
+   </xs:simpleType>
+   <xs:simpleType name="xs_string_105">
+      <xs:restriction base="xs:string">
+         <xs:minLength value="1"/>
+         <xs:maxLength value="105"/>
+      </xs:restriction>
+   </xs:simpleType>
+   <xs:simpleType name="xs_string_140">
+      <xs:restriction base="xs:string">
+         <xs:minLength value="1"/>
+         <xs:maxLength value="140"/>
+      </xs:restriction>
+   </xs:simpleType>
+</xs:schema>
